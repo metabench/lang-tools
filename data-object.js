@@ -785,9 +785,7 @@ class Data_Object extends Evented_Class {
 
 // Can be done just with a getter, no setter.
 
-
-jsgui.map_classes = {};
-
+jsgui.map_classes = jsgui.map_classes || {};
 
 // seems like an overlap with the new jsgui.fromObject function.
 //  That will initially go in the Enhanced_Data_Object module, or jsgui-enh
@@ -829,9 +827,4 @@ var dobj = (obj, data_def) => {
 
 Data_Object.dobj = dobj;
 Data_Object.Mini_Context = Mini_Context;
-//Data_Object.set_Enhanced_Data_Object = set_Enhanced_Data_Object;
-//Data_Object.get_Enhanced_Data_Object = get_Enhanced_Data_Object;
-
-//console.log('1. Data_Object');
-
 module.exports = Data_Object;

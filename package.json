@@ -3,7 +3,7 @@
     "main": "lang.js",
     "license": "MIT",
     "dependencies": {
-        "lang-mini": "0.0.23"
+        "lang-mini": "0.0.24"
     },
     "comments": [
         "Should possibly have the more comprehensive lang tools for plugging into jsgui and doing advanced coding."
@@ -17,5 +17,5 @@
         "type": "git",
         "url": "https://github.com/metabench/lang-tools.git"
     },
-    "version": "0.0.8"
+    "version": "0.0.9"
 }
