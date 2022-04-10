@@ -33,7 +33,6 @@ var is_arr_of_strs = j.is_arr_of_strs;
 var is_arr_of_t = j.is_arr_of_t;
 var clone = jsgui.clone;
 
-
 var input_processors = jsgui.input_processors;
 
 class Data_Value extends Evented_Class {

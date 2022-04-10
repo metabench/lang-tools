@@ -162,7 +162,7 @@ class Data_Object extends Evented_Class {
             }
 
         } else {
-            var that = this;
+            //var that = this;
             //this._initializing = true;
 
             var t_spec = tof(spec);

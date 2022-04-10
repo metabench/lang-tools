@@ -44,7 +44,33 @@ lang_mini.Ordered_String_List = Ordered_String_List;
 lang_mini.Sorted_KVS = Sorted_KVS;
 // remake it as an ec
 
+
+
 let ec = new Evented_Class();
 Object.assign(ec, lang_mini);
+
+// Nothing here particularly about Resources.
+//  Some resources may need to access the internet.
+//   Less clearly lang specific?
+
+// Or a data-transformer / transformer
+//  compiler being a subset of transformer.
+//  codec also being a subset of transformer.
+
+
+
+
+
+// a compile command too, for command line usage.
+
+
+// lang_mini.compilers.load('babel', babel.transform) ???
+//  but will need to be able to send options through to compilers too.
+//  Could have named option sets, easier shorthands.
+
+
+
+
+
 
 module.exports = ec;
