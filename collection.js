@@ -570,9 +570,9 @@ class Collection extends Data_Object {
     }
 
     'push' (value) {
-        var tv = tof(value);
-        var fn_index = this.fn_index;
-        var idx_key, has_idx_key = false,
+        let tv = tof(value);
+        let fn_index = this.fn_index;
+        let idx_key, has_idx_key = false,
             pos;
         if (fn_index) {
             idx_key = fn_index(value);
@@ -587,7 +587,7 @@ class Collection extends Data_Object {
             //this.index_system.unsafe_add_object(value);
             this._arr_idx++;
 
-            var e = {
+            const e = {
                 'target': this,
                 'item': value,
                 'value': value,
@@ -603,7 +603,7 @@ class Collection extends Data_Object {
             this._arr.push(value);
             this._arr_idx++;
 
-            var e = {
+            const e = {
                 'target': this,
                 'item': value,
                 'value': value,
@@ -621,7 +621,7 @@ class Collection extends Data_Object {
             // Should not need a context or ID just to be put in place.
             this._arr.push(value);
             this._arr_idx++;
-            var e = {
+            const e = {
                 'target': this,
                 'item': value,
                 'value': value,
@@ -632,11 +632,11 @@ class Collection extends Data_Object {
         }
 
         if (tv === 'array') {
-            var new_coll = new Collection(value);
+            const new_coll = new Collection(value);
             pos = this._arr.length;
             // Should not need a context or ID just to be put in place.
             this._arr.push(new_coll);
-            var e = {
+            const e = {
                 'target': this,
                 'item': new_coll,
                 'value': new_coll,
@@ -649,13 +649,13 @@ class Collection extends Data_Object {
 
         if (tv === 'string' || tv === 'number') {
             // Not so sure about this now.
-            var dv = new Data_Value({
+            const dv = new Data_Value({
                 'value': value
             });
             pos = this._arr.length;
             // Should not need a context or ID just to be put in place.
             this._arr.push(dv);
-            var e = {
+            const e = {
                 'target': this,
                 'item': dv,
                 'value': dv,
@@ -682,7 +682,7 @@ class Collection extends Data_Object {
         var a = arguments;
         a.l = a.length;
         var sig = get_a_sig(a, 1);
-        if (a.l == 0) {
+        if (a.l === 0) {
             return this._arr;
         } else {
             var stack = new Error().stack;
@@ -690,7 +690,7 @@ class Collection extends Data_Object {
         }
     }
     'value' () {
-        var res = [];
+        const res = [];
         this.each((v, i) => {
             if (typeof v.value == 'function') {
                 //res[i] = v.value();
