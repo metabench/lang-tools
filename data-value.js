@@ -35,6 +35,12 @@ var clone = jsgui.clone;
 
 var input_processors = jsgui.input_processors;
 
+// What type is the value?
+
+
+
+
+
 class Data_Value extends Evented_Class {
     constructor(spec) {
         super(spec);

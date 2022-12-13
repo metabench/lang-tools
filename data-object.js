@@ -1,6 +1,9 @@
 var jsgui = require('lang-mini');
 
 
+// 2022 - Looks like it could be modified into being Model, or part of one.
+
+
 //var Evented_Class = require('./_evented-class');
 //var Data_Structures = require('./jsgui-data-structures');
 var Data_Value = require('./data-value');
@@ -62,6 +65,10 @@ jsgui.__data_id_method = 'init';
 //  May not be impossible to fix things from this codebase.
 
 // Just not sure about the indexing right now.
+
+
+// This seems a little bit like 'Model'.
+
 
 
 
