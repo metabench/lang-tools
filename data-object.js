@@ -129,6 +129,7 @@ var is_js_native = function (obj) {
 class Data_Object extends Evented_Class {
     constructor(spec = {}, fields) {
         //console.log('1* spec.__type_name', spec.__type_name);
+        spec = spec || {};
         super(spec);
         if (spec.id) {
 			this.__id = spec.id;
@@ -138,7 +139,7 @@ class Data_Object extends Evented_Class {
 		}
         this.__type_name = spec.__type_name || 'data_object';
 
-        this.set_fields_from_spec(fields, spec);
+        if (fields) this.set_fields_from_spec(fields, spec);
 
         this.__data_object = true;
         //if (!spec) spec = {};

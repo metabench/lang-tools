@@ -419,6 +419,7 @@ class Collection extends Data_Object {
     }
 
     'has' (obj_key) {
+        console.trace();
         throw 'NYI';
     }
     'get_index' () {
