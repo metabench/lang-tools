@@ -419,8 +419,18 @@ class Collection extends Data_Object {
     }
 
     'has' (obj_key) {
-        console.trace();
-        throw 'NYI';
+        // This part needs (temp?) fixing...
+
+        //console.log('obj_key', obj_key);
+
+        if (this.get_index(obj_key) === undefined) {
+            return false;
+        } else {
+            return true;
+        }
+
+        //console.trace();
+        //throw 'NYI';
     }
     'get_index' () {
         // Make (more) monomorphic, have it consult the sorted KVS.
@@ -428,7 +438,51 @@ class Collection extends Data_Object {
         a.l = arguments.length;
         var sig = get_a_sig(a, 1);
         if (sig === '[s]') {
-            return this.index_system.search(a[0]);
+
+            if (this.index_system) {
+
+                return this.index_system.search(a[0]);
+
+                
+
+            } else {
+                //console.log('a[0]', a[0]);
+
+                // Could search by name...?
+
+                //console.log('this._arr', this._arr);
+
+                if (this._arr.length === 0) {
+                    return undefined;
+                } else {
+
+                    // go through the objects in the array.
+                    //   check against 'name' properties...
+
+                    for (let c = 0; c < this._arr.length; c++) {
+                        const item = this._arr[c];
+
+
+
+                        if (item?.name === a[0]) {
+                            return c;
+                        }
+
+                    }
+
+                    return undefined;
+
+                    //console.trace();
+                    //throw 'stop';
+                }
+
+                
+            }
+
+            
+        } else {
+            console.trace();
+            throw 'Expected [s]';
         }
     }
     
