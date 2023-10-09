@@ -342,27 +342,38 @@ class Collection extends Data_Object {
     //  can be sorted for insertion into index with more rapid algorithmic time.
 
     'remove' () {
-        // Make more monomorphic.
+        // Make more monomorphic. ????2023????
 
         var a = arguments;
         a.l = arguments.length;
         var sig = get_a_sig(a, 1);
         //var that = this;
 
+        //console.log('remove sig:', sig);
+
         if (sig == '[n]') {
             var pos = a[0];
+            //console.log('pos - item index', pos);
             var item = this._arr[pos];
-            var o_item = item;
+            //var o_item = item;
             var spliced_pos = pos;
             this._arr.splice(pos, 1);
             this._arr_idx--;
-            var length = this._arr.length;
+            //var length = this._arr.length;
+
+            /*
             while (pos < length) {
                 // reassign the stored position of the item
                 var item = this._arr[pos];
-                item.relationships[own_id] = [this, pos];
+
+                // Not so sure about 'relationships' here.
+                //item.relationships[own_id] = [this, pos];
+
                 pos++;
             }
+            */
+
+
             var e = {
                 'target': this,
                 'value': item,
@@ -395,6 +406,9 @@ class Collection extends Data_Object {
         } else {
             let item_index;
             // or swap the item itself
+            const item = a[0];
+
+            // 
 
             let arr = this._arr,
                 l = arr.length;
@@ -403,9 +417,16 @@ class Collection extends Data_Object {
             } else {
                 let found = false,
                     c = 0;
+                
+                
                 while (!found && c < l) {
                     found = arr[c] === item;
-                    item_index = c;
+
+                    if (found) {
+                        item_index = c;
+                    }
+
+                    
                     c++;
                 }
                 //if (found) {
