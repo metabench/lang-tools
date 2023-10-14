@@ -7,9 +7,10 @@
 
 
 var lang_mini = require('lang-mini');
-
 const collective = require('./collective');
+
 lang_mini.collective = collective;
+lang_mini.collect = collective;
 
 var Evented_Class = lang_mini.Evented_Class;
 //var Evented_Class = require('./_evented-class');
