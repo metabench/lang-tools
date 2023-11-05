@@ -1,5 +1,6 @@
 var jsgui = require('lang-mini');
 //var Evented_Class = require('./_evented-class');
+const Data_Model = require('./Data_Model');
 
 var j = jsgui;
 var Evented_Class = j.Evented_Class;
@@ -37,41 +38,60 @@ var input_processors = jsgui.input_processors;
 
 // What type is the value?
 
+// Data_Model items maybe are best existing within a context.
+//   Not sure that's a necessary restriction / requirement.
 
 
 
 
-class Data_Value extends Evented_Class {
-    constructor(spec) {
+
+class Data_Value extends Data_Model {
+
+
+    constructor(spec = {}) {
         super(spec);
         this.__data_value = true;
+        console.log('old (1.1) Data_Value constructor');
 
-        if (spec && spec.context) {
+        if (spec.context) {
             this.context = spec.context;
-
         }
-        if (spec) {
-            //console.log('!* spec.value ' + spec.value);
-            //console.log('spec ' + stringify(spec));
-        }
-        if (spec && is_defined(spec.value)) {
+        if (is_defined(spec.value)) {
             this._ = spec.value;
         }
+        // Maybe don't use __type.
+        //   instanceOf, maybe typeOf ....
         this.__type = 'data_value';
         //this._bound_events = {};
+
+        // Not so sure about _relationships.
+        //   Maybe it will be of use.
+
         this._relationships = {};
     }
+    // Get but with a format change?
+    //   Get and validate???
+
     'get'() {
         //return this._val;
         return this._;
     }
+
+    // get value and set value.
+
     'value'() {
         return this._;
     }
+
+
     'toObject'() {
         return this._;
 
     }
+
+    // .value =
+    //   Though .set could have more input, eg a format shifter????
+
     'set'(val) {
         //this._val = val;
 
@@ -93,6 +113,8 @@ class Data_Value extends Evented_Class {
         });
         return val;
     }
+
+
     'toString'() {
         //return stringify(this.get());
         // con
@@ -111,12 +133,18 @@ class Data_Value extends Evented_Class {
             return val;
         }
     }
+
+    // Need to copy / clone the ._ value
+
     'clone'() {
         var res = new Data_Value({
             'value': this._
         });
         return res;
     }
+
+    // This is important to the running of jsgui3.
+
     '_id'() {
         if (this.__id) return this.__id;
         if (this.context) {
@@ -131,14 +159,18 @@ class Data_Value extends Evented_Class {
         }
         return this.__id;
     }
+
+
     'parent'() {
         var a = arguments; a.l = arguments.length; var sig = get_a_sig(a, 1);
+
+        // .sibling_index instead. Clearer, matched HTML terminology in places.
+
         var obj, index;
         //console.log('parent sig', sig);
         if (a.l == 0) {
             return this._parent;
-        }
-        if (a.l == 1) {
+        } else if (a.l == 1) {
             obj = a[0];
 
             if (!this.context && obj.context) {
@@ -154,8 +186,7 @@ class Data_Value extends Evented_Class {
                 that._parent = obj;
             }
             relate_by_ref(this);
-        }
-        if (a.l == 2) {
+        } else if (a.l == 2) {
             obj = a[0];
             index = a[1];
 
@@ -166,6 +197,8 @@ class Data_Value extends Evented_Class {
             this._parent = obj;
             this._index = index;
         }
+
+        /*
 
         if (is_defined(index)) {
             // I think we just set the __index property.
@@ -182,6 +215,8 @@ class Data_Value extends Evented_Class {
 
             // setting the parent... the parent may have a context.
         }
+
+        */
     }
 };
 

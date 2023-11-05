@@ -1,9 +1,9 @@
 
 var lang = require('lang-mini');
 //var Data_Structures = require('./jsgui-data-structures');
-var Data_Value = require('./data-value');
-var Data_Object = require('./data-object');
-var Sorted_KVS = require('./sorted-kvs');
+var Data_Value = require('./Data_Value');
+var Data_Object = require('./Data_Object');
+var Sorted_KVS = require('../../sorted-kvs');
 var dobj = Data_Object.dobj;
 //console.log('Data_Object', Data_Object);
 //var Data_Object_Field_Collection = Data_Object.Fields_Collection;
@@ -22,6 +22,8 @@ var dop = Data_Object.prototype;
 // Could definitely do with more work and testing.
 //  Being sure of what its API is.
 // .A fixed version of what it is now, consider and ask about improvements.
+
+
 
 class Collection extends Data_Object {
     constructor(spec = {}, arr_values) {

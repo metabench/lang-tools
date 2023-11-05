@@ -6,7 +6,7 @@ var jsgui = require('lang-mini');
 
 //var Evented_Class = require('./_evented-class');
 //var Data_Structures = require('./jsgui-data-structures');
-var Data_Value = require('./data-value');
+var Data_Value = require('./Data_Value');
 //var Constraint = require('./constraint');
 //var Fields_Collection = require('./fields-collection');
 //var Collection = require('jsgui2-collection');
@@ -55,6 +55,17 @@ jsgui.__data_id_method = 'init';
 //   It has got way too complicated so far. We need to map between an object (reading specific properties) and an array value.
 //    The lists of keys for these items will be stored within a sorted structure.
 
+// Data_Object and Data_Value both being Data_Item????
+// Or Data_Model ????
+
+// Or within a 'Model' category.
+//   This is working now as the 'M' within 'MVC' or 'CMVM'
+
+// data-model directory overall???
+// data_model_base perhaps????
+
+// or just start at data_model Data_Model for now.
+
 
 
 // Get fields key from object.
@@ -79,57 +90,23 @@ jsgui.__data_id_method = 'init';
 //var value_as_field_constraint = Constraint.value_as_field_constraint;
 
 //var Ordered_String_List = Data_Structures.Ordered_String_List;
-var Ordered_String_List = require('./ordered-string-list');
+var Ordered_String_List = require('../ordered-string-list');
 
-class Mini_Context {
-    // Need quite a simple mechanism to get IDs for objects.
-    // They will be typed objects/
-    constructor(spec) {
-        var map_typed_counts = {};
-        var typed_id = function (str_type) {
-            throw 'stop Mini_Context typed id';
-            var res;
-            if (!map_typed_counts[str_type]) {
-                res = str_type + '_0';
-                map_typed_counts[str_type] = 1;
-            } else {
-                res = str_type + '_' + map_typed_counts[str_type];
-                map_typed_counts[str_type]++;
-            }
-            return res;
-        };
-        this.new_id = typed_id;
-        //new_id
-    }
-    'make'(abstract_object) {
-        if (abstract_object._abstract) {
-            //var res = new
-            // we need the constructor function.
-            var constructor = abstract_object.constructor;
-            //console.log('constructor ' + constructor);
-            //throw 'stop';
-            var aos = abstract_object._spec;
-            // could use 'delete?'
-            aos.abstract = null;
-            //aos._abstract = null;
-            aos.context = this;
-            var res = new constructor(aos);
-            return res;
-        } else {
-            throw 'Object must be abstract, having ._abstract == true';
-        }
-    }
-}
+const Mini_Context = require('./Mini_Context');
+const Data_Model = require('./Data_Model');
 
 var is_js_native = function (obj) {
     var t = tof(obj);
+
+    // other types????
     return t == 'number' || t == 'string' || t == 'boolean' || t == 'array';
 };
 
-class Data_Object extends Evented_Class {
+// Seems as though fields are not important to how these work effectively (fields being in obext / oext)
+
+class Data_Object extends Data_Model {
     constructor(spec = {}, fields) {
         //console.log('1* spec.__type_name', spec.__type_name);
-        spec = spec || {};
         super(spec);
         if (spec.id) {
 			this.__id = spec.id;
@@ -139,13 +116,79 @@ class Data_Object extends Evented_Class {
 		}
         this.__type_name = spec.__type_name || 'data_object';
 
+        // Will be better to use obext for fields.
+
+        // Does seem worth not using this any longer....
+        //   Replace with something more powerful?
+
+        // Moving obext field to lang-mini could help....
+        //   Copying it there, for the moment.
+        //     Could even modify obext so it passes through fields from lang-mini.
+
+
+
         if (fields) this.set_fields_from_spec(fields, spec);
 
+        // Should incorporate data types within fields.
+        //   Maybe grammer too....?
+
         this.__data_object = true;
+
+        // Do need to still be concious of performance here.
+        //   This is currently working as a basis for jsgui controls, which do work efficiently at the moment.
+        //     Will need to be careful about changing the API.
+        //     Could even write code at a higher level that would check which API is being used and use that....
+        // Late 2023 - Seems as though there is a chance to make breaking changes here and fix them.
+        //   So long as it makes the overall concepts clearer, and aids in more concise code.
+
+        // don't want the .value() function, use getters and setters, or maybe the obext field.
+
+        // Data_Value could have a 'name' or 'key_name' or 'key' property.
+        //   Could use 'key' and 'name' interchangably.
+        //   data_value.value ????    seems like it would be needed on some levels.
+        //     maybe .toObject, toNumber, toString, toArray, toJSON, toInteger, toHashString????
+
+        // 
+
+        // .to(type)
+
+
+
+
+        //   
+
+
+
+
+
+
+
+
+
+
+
         //if (!spec) spec = {};
         // if it's abstract call the abstract_init.
 
         //console.log('1** spec', spec);
+
+        // Possibly will not need to handle abstract Data_Objects.
+        //   It was done as an alternative to not using new with the old-style constructors, which was allowed, and could
+        //     be detected.
+
+        // Not sure about removing this.
+
+        //   Easier of definition of fields.
+        //     Fields as provided by obext. See about further support for that.
+        //     See about those fields supporting Grammar or other type capabilities from lang-mini.
+
+        // See about a little bit more code to get lang-mini enforcing (or providing enforcement functions to support) specific types,
+        //   incl ranges within types, number of DP (auto-rounding).
+
+        // 
+
+
+
 
         if (spec.abstract === true) {
             this._abstract = true;
@@ -158,9 +201,7 @@ class Data_Object extends Evented_Class {
 
                 // the type constructor could be used in a collection.
                 //  could be more leightweight than other things? specific constraint objects.
-            }
-            // Abstract controls won't be dealing with events for the moment.
-            if (tSpec == 'object') {
+            } else if (tSpec == 'object') {
                 this._spec = spec;
                 // could possibly
                 // but maybe want to keep this json-friendly.
@@ -207,8 +248,7 @@ class Data_Object extends Evented_Class {
                 }
                 //console.log('this.__id', this.__id);
                 // want to see if we are using any of the spec items as fields.
-            }
-            if (t_spec == 'data_object') {
+            } else if (t_spec == 'data_object') {
                 // Initialization by Data_Object value (for the moment)
                 // Not so sure about copying the id of another object.
                 if (spec.context) this.context = spec.context;
@@ -223,6 +263,8 @@ class Data_Object extends Evented_Class {
                 });
                 */
             }
+
+            /*
             if (!is_defined(this.__id) && jsgui.__data_id_method == 'init') {
                 if (this.context) {
                     //console.log('this.context ' + this.context);
@@ -241,6 +283,7 @@ class Data_Object extends Evented_Class {
 
                 }
             }
+            */
 
             if (is_defined(spec.parent)) {
                 //this.set('parent', spec.parent);
@@ -256,21 +299,35 @@ class Data_Object extends Evented_Class {
         //console.log('end Data_Object init');
     }
 
+
+
     'set_fields_from_spec'(fields, spec) {
-        let that = this;
+        // obext fields don't work like this.
+        //   Should do more to support obext fields, powerful functionality that raises change events.
+
+        // .field.on('change') ???
+
+        // So model.background.color would be a field (somehow???)
+        //   Make some advances on this level, and then integrate it into an app.
+
+
+
+
+
+
+        //let that = this;
         each(fields, field => {
             if (typeof spec[field[0]] !== 'undefined') {
-                that[field[0]] = spec[field[0]];
+                this[field[0]] = spec[field[0]];
             } else {
-                that[field[0]] = field[2];
+                this[field[0]] = field[2];
             }
-
 
         })
     }
 
     'init_default_events'() {
-
+        // May still / again make use of this with some controls.
 
     }
 
@@ -438,11 +495,11 @@ class Data_Object extends Evented_Class {
     // Maybe only do this with the fields anyway
 
     'load_from_spec'(spec, arr_item_names) {
-        var that = this;
-        each(arr_item_names, function (v, i) {
+        //var that = this;
+        each(arr_item_names, (v) => {
             var spec_item = spec[v];
             if (is_defined(spec_item)) {
-                that.set(v, spec_item);
+                this.set(v, spec_item);
             }
         });
     }
@@ -523,6 +580,11 @@ class Data_Object extends Evented_Class {
             //var field_info, field_name, field_type_name;
 
             if (sig == '[s,f]') {
+
+                // Not yet????
+                //   Or use promises rather than support callbacks here?
+                //   Or support callbacks on promises and obs?
+
                 throw 'Asyncronous access not allowed on Data_Object get.';
                 var res = this.get(a[0]);
                 var callback = a[1];
@@ -534,10 +596,7 @@ class Data_Object extends Evented_Class {
                 // could check if we had a function returned.
                 //  then we execute that function
                 //callback(null, res);
-            }
-            // check to see if there is a field defined.
-
-            if (sig == '[s]') {
+            } else if (sig == '[s]') {
                 var res = ll_get(this, a[0]);
                 return res;
             } else if (a.l === 0) {
@@ -547,6 +606,20 @@ class Data_Object extends Evented_Class {
             }
         }
     }
+
+    // Or don't use / support get and set for the moment?
+    //   Only use property / field access?
+    //   Define property, with getter and setter, seems like a more cleanly defined system.
+
+    // May see about making a new simplified implementation of this and running it through tests.
+    //   Though the new Data_Value seems like the more appropriate way for the moment.
+
+    // May look into seeing where Data_Value is used in the current system too.
+    //   Could see about further incorportating its use (in places).
+
+
+
+
 
     //'set': fp(function(a, sig) {
     'set'() {
@@ -755,9 +828,7 @@ class Data_Object extends Evented_Class {
                     // Raise a change event?
                     //  Or is set event OK?
                     return value;
-                }
-
-                if (sig === '[o]') {
+                } else if (sig === '[o]') {
                     //console.log('setting with a provided object');
 
                     //var that = this;

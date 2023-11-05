@@ -4,7 +4,7 @@
 
 var jsgui = require('lang-mini');
 //var Data_Structures = require('./jsgui-data-structures');
-var Collection = require('./collection');
+var Collection = require('./Data_Model/Collection');
 
 //var Data_Grid = require('jsgui2-data-grid');
 

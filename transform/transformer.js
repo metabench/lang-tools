@@ -1,4 +1,6 @@
 
+// Possibly should extend this elsewhere??
+//   Possibly include more functionality here.
 
 class Transformer {
     constructor(spec) {

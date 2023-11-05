@@ -26,6 +26,36 @@ Do see the advantage in adding a .model property, and .view property.
 Plan on doing both with mixins.
 Maybe on all controls? Maybe not.
 Maybe on MVC_Control.
+
+[Late 2023
+  Data_Object is at the core of the currently developing implementation of MVC (Control has: Data_Model, View_Model)
+  Not yet using Data_Value properly.
+  May make sense to use it as a single value within a Data_Model.
+  // maybe ._ will be the value????
+  // or .v ???
+  
+  // Defining the format of / for the Data_Value.
+
+  // Maybe remake both of them in improved ways?
+  //   Would need to define what their APIs are and make improved versions (first?)
+
+  // Maybe some API changes...?
+  //   .get being a different way to go about things than fields.
+
+  //   .get(key, format) could help though.
+  //   .get(key, other_function_to_call_before_returning_value)
+
+
+
+
+
+
+
+
+
+
+]
+
 MVC_Control may be the best platform on which to create controls in the future.
   A more clearly defined and documented API. ???
     Better document existing API???

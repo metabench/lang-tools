@@ -1,3 +1,23 @@
+
+// Need to test Data_Object too.
+
+// Data_Value
+
+// Want to define data models and data values easily and intuitively, and automatically in some cases.
+//   Would be nice to (automatically) allow single property read / read/write access to some properties.
+//     Eg don't provide write access to a user id etc...
+//       Don't give the client write access to prices set by the storefront.
+//         Though server-side validation should prevent that hack from working, but it would make sense applying that principle.
+
+
+
+
+
+
+
+
+
+
 const Collection = require('../collection');
 
 
