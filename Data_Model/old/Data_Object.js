@@ -90,10 +90,9 @@ jsgui.__data_id_method = 'init';
 //var value_as_field_constraint = Constraint.value_as_field_constraint;
 
 //var Ordered_String_List = Data_Structures.Ordered_String_List;
-var Ordered_String_List = require('../ordered-string-list');
 
-const Mini_Context = require('./Mini_Context');
-const Data_Model = require('./Data_Model');
+const Mini_Context = require('../Mini_Context');
+const Data_Model = require('../Data_Model');
 
 var is_js_native = function (obj) {
     var t = tof(obj);

@@ -7,7 +7,7 @@
 // What type is the value?
 
 
-const Evented_Class = require('lang-mini');
+const {Evented_Class} = require('lang-mini');
 
 
 /*

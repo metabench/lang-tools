@@ -1,6 +1,6 @@
 var jsgui = require('lang-mini');
 //var Evented_Class = require('./_evented-class');
-const Data_Model = require('./Data_Model');
+const Data_Model = require('../Data_Model');
 
 var j = jsgui;
 var Evented_Class = j.Evented_Class;
