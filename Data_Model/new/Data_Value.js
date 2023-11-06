@@ -3,28 +3,84 @@ var jsgui = require('lang-mini');
 
 const Data_Model = require('../Data_Model');
 
-const {is_defined, input_processors} = jsgui;
+const {is_defined, input_processors, field} = jsgui;
 
 // What type is the value???
 
+// Examples / tests of using this in this module could help.
+//   Benchmarks too?
+
+
+
+
 class Data_Value extends Data_Model {
 
-    constructor(spec) {
+    constructor(spec = {}) {
         super(spec);
         this.__data_value = true;
         console.log('new (2.0) Data_Value constructor');
 
-        if (spec && spec.context) {
+        // Want to make this capable of using data types.
+        //   Data_Type could even be the 2nd param.
+        //     Will use Functional_Data_Type for the moment.
+        //       It's fairly simple.
+        //       The boolean validate function is the main thing.
+
+
+        // if spec.data_type....?
+
+        //  set own data_type.
+        //    then with set it will validate it.
+
+        if (spec.data_type) this.data_type = spec.data_type;
+
+
+
+
+
+        if (spec.context) {
             this.context = spec.context;
         }
-        if (spec) {
-            //console.log('!* spec.value ' + spec.value);
-            //console.log('spec ' + stringify(spec));
-        }
+        
+
+        /*
+
         if (spec && is_defined(spec.value)) {
+            // Check it fits in with the Data_Type ???
+            //   A Data_Type class on the lang-mini level could help.
+
+
+
+
+
             this._ = spec.value;
         }
+        */
+
+        // And also integrate the data_type into the field.
+
+        if (this.data_type) {
+
+            // Need to change / upgrade field (now in lang-mini) so that it can validate data type on set (attempt).
+            //   Maybe even throw error????
+            //     It could be optional.
+
+            // .throw_error_on_validation_failure boolean property perhaps.
+
+            //if (this.)
+
+            field(this, 'value', this.data_type, spec.value);
+        } else {
+            field(this, 'value', spec.value);
+        }
+
+        
+
+
         this.__type = 'data_value';
+
+
+
         // this.__data_type = ...
         // this.__data_type_name = ... ?
 
@@ -33,10 +89,15 @@ class Data_Value extends Data_Model {
     }
     // Get but with a format change?
     //   Get and validate???
+    
+    /*
     'get'() {
         //return this._val;
         return this._;
     }
+    */
+
+
     // get value and set value.
     /*
     'value'() {
@@ -46,9 +107,13 @@ class Data_Value extends Data_Model {
 
     // Not sure how this would work with 'field'?
 
+    /*
     get value() {
         return this._;
     }
+    */
+
+    /*
     set value(value) {
 
         // Running the input processor(s)....?
@@ -59,7 +124,7 @@ class Data_Value extends Data_Model {
 
         if (this._ !== value) {
 
-
+            
 
             const old = this._;
             this._ = value;
@@ -74,7 +139,7 @@ class Data_Value extends Data_Model {
 
         // Raise the change event.
     }
-
+    */
 
     'toObject'() {
         return this._;
@@ -88,6 +153,9 @@ class Data_Value extends Data_Model {
         //this._val = val;
 
         // This may also need to make use of input_processors
+        //   That may get more integrated into data type and field.
+
+        /*
 
         var input_processor = input_processors[this.__type_name];
 
@@ -103,6 +171,9 @@ class Data_Value extends Data_Model {
             'value': val
         });
         return val;
+        */
+
+        this.value = val;
     }
 
 
@@ -118,6 +189,7 @@ class Data_Value extends Data_Model {
         var val = this.get();
         //var tval = tof(val);
         var tval = typeof val;
+
         if (tval == 'string') {
             return '"' + val + '"';
         } else {
@@ -135,6 +207,8 @@ class Data_Value extends Data_Model {
     }
 
     // This is important to the running of jsgui3.
+    //   Move to the lower level of Data_Model?
+
 
     '_id'() {
         if (this.__id) return this.__id;
@@ -144,7 +218,7 @@ class Data_Value extends Data_Model {
             this.__id = this.context.new_id(this.__type_name || this.__type);
         } else {
             if (!is_defined(this.__id)) {
-                throw 'DataValue should have context';
+                throw 'Data_Value should have context';
                 this.__id = new_data_value_id();
             }
         }
@@ -190,6 +264,8 @@ class Data_Value extends Data_Model {
         }
 
         /*
+
+        // Maybe a __sibling_index property / field of some sort?
 
         if (is_defined(index)) {
             // I think we just set the __index property.
