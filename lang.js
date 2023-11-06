@@ -23,7 +23,7 @@ const Evented_Class = lang_mini.Evented_Class;
 const B_Plus_Tree = require('./b-plus-tree/b-plus-tree');
 const Collection = require('./Data_Model/old/Collection');
 const Data_Object = require('./Data_Model/Data_Object');
-const Data_Value = require('././Data_Model/Data_Object');
+const Data_Value = require('././Data_Model/Data_Value');
 const Data_Model = require('././Data_Model/Data_Model');
 const Doubly_Linked_List = require('./doubly-linked-list');
 

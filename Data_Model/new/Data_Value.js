@@ -43,6 +43,9 @@ class Data_Value extends Data_Model {
         return this._;
     }
     */
+
+    // Not sure how this would work with 'field'?
+
     get value() {
         return this._;
     }
@@ -50,10 +53,17 @@ class Data_Value extends Data_Model {
 
         // Running the input processor(s)....?
 
+        // Validate it (directly as type, as parsed string???, as other transformation?)
+
+
+
         if (this._ !== value) {
+
+
+
             const old = this._;
             this._ = value;
-            raise('change', {
+            this.raise('change', {
                 name: 'value',
                 old,
                 value
