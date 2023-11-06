@@ -4,7 +4,7 @@
     "license": "MIT",
     "dependencies": {
         "fnl": "^0.0.33",
-        "lang-mini": "0.0.36"
+        "lang-mini": "0.0.37"
     },
     "scripts": {
         "start": "node ./lang",
@@ -22,5 +22,5 @@
         "type": "git",
         "url": "https://github.com/metabench/lang-tools.git"
     },
-    "version": "0.0.28"
+    "version": "0.0.29"
 }
