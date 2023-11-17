@@ -23,6 +23,21 @@ var dop = Data_Object.prototype;
 //  Being sure of what its API is.
 // .A fixed version of what it is now, consider and ask about improvements.
 
+// May make a new version that's a copy of it, and make breaking changes to it.
+//   Maybe also work on a ground-up implementation, and introduce parts of that into the new copy of Collection.
+
+// May also want a Data_Object or Data_Value that holds or uses or represents a Typed_Array.
+//   However, would not (be able to??) respond to changes in the value(s) in that typed aray.
+//    Unless some trickery was done....
+//    A wrapped Data_Model_Typed_Array could slow things down too much.
+
+// At some points need to be OK with holding and sometimes changing raw values.
+//   If you want to trigger the change notifications, use the higher level APIs.
+
+
+
+
+
 
 
 class Collection extends Data_Object {
@@ -37,6 +52,16 @@ class Collection extends Data_Object {
                 this.constraint(spec);
             }
         } else {
+
+            // For the moment, mainly wraps the ._arr object.
+            //   In newer version(s) may retain the ._arr property. Maybe not though.
+            //     Perhaps this class would better use a proxy to provide access to multiple items in the array,
+            //      and responding to them being changed?
+
+
+
+
+
             this._relationships = this._relationships || {};
             this._arr_idx = 0;
             this._arr = [];
@@ -109,7 +134,7 @@ class Collection extends Data_Object {
     // maybe use fp, and otherwise apply with the same params and context.
     'set' (value) {
         var tval = tof(value);
-        if (tval == 'data_object') {
+        if (tval === 'data_object' || tval === 'data_value') {
             this.clear();
             return this.push(value);
         } else if (tval === 'array') {
@@ -134,10 +159,24 @@ class Collection extends Data_Object {
     }
 
     'clear' () {
+
+
+
         this._arr_idx = 0;
         this._arr = [];
         this.index.clear();
         // listner class hears the event but then loses access to its own this.
+
+        // The future change clear event could have an immutable copy of this efore the change, and return it as the old value???
+
+        // However, Collection (maybe?) would not even have .value.
+        //   or .value could be the array like ._arr???
+        //   and also provide a ._arr interface in the future.
+
+
+
+
+
         this.raise('change', {
             'name': 'clear'
         });
@@ -353,7 +392,7 @@ class Collection extends Data_Object {
 
         //console.log('remove sig:', sig);
 
-        if (sig == '[n]') {
+        if (sig === '[n]') {
             var pos = a[0];
             //console.log('pos - item index', pos);
             var item = this._arr[pos];
@@ -385,7 +424,7 @@ class Collection extends Data_Object {
             this.raise('change', e);
 
             return pos;
-        } else if (sig == '[s]') {
+        } else if (sig === '[s]') {
             var key = a[0];
             var obj = this.index_system.find([
                 ['value', key]
@@ -543,8 +582,7 @@ class Collection extends Data_Object {
                 'name': 'insert'
             }
             this.raise('change', e);
-        }
-        if (tv === 'collection') {
+        } else if (tv === 'collection') {
             pos = this._arr.length;
             this._arr.push(value);
             this._arr_idx++;
@@ -558,8 +596,7 @@ class Collection extends Data_Object {
             }
             this.raise('change', e);
 
-        }
-        if (tv === 'data_object' || tv === 'control') {
+        } else if (tv === 'data_object' || tv === 'control') {
             pos = this._arr.length;
             // Should not need a context or ID just to be put in place.
             this._arr.push(value);
@@ -572,9 +609,7 @@ class Collection extends Data_Object {
                 'name': 'insert'
             }
             this.raise('change', e);
-        }
-
-        if (tv === 'array') {
+        } else if (tv === 'array') {
             const new_coll = new Collection(value);
             pos = this._arr.length;
             // Should not need a context or ID just to be put in place.
@@ -622,7 +657,7 @@ class Collection extends Data_Object {
     'values' () {
         var a = arguments;
         a.l = a.length;
-        var sig = get_a_sig(a, 1);
+        //var sig = get_a_sig(a, 1);
         if (a.l === 0) {
             return this._arr;
         } else {

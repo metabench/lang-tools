@@ -1,16 +1,31 @@
-var jsgui = require('lang-mini');
+const jsgui = require('lang-mini');
 
+const {each, tof, is_defined, get_a_sig, ll_get} = jsgui;
+
+
+const Mini_Context = require('../Mini_Context');
+const Data_Model = require('../Data_Model');
+const Data_Value = require('./Data_Value');
 
 // 2022 - Looks like it could be modified into being Model, or part of one.
 // 2023 - In the process of doing this.
+//        Could also use the now quite old but little used mfp, and also begin using fp again.
+//        The functions that allow clearer and more concise functions would prove very useful at this stage.
+//        Now the jsgui system essentialy works, can put abstractions in place which showing / proving it still works.
+
+
+
 
 
 //var Evented_Class = require('./_evented-class');
 //var Data_Structures = require('./jsgui-data-structures');
-var Data_Value = require('./Data_Value');
+
 //var Constraint = require('./constraint');
 //var Fields_Collection = require('./fields-collection');
 //var Collection = require('jsgui2-collection');
+
+/*
+
 var j = jsgui;
 var Evented_Class = j.Evented_Class;
 var Class = j.Class;
@@ -46,7 +61,11 @@ var clone = jsgui.clone;
 var data_value_index = 0;
 //var data_value_abbreviation = 'val';
 
-// do data objects get an ID when they are initialized.
+*/
+
+// do data objects get an ID when they are initialized???
+//   Better to make context dependent?
+
 jsgui.__data_id_method = 'init';
 
 
@@ -92,9 +111,6 @@ jsgui.__data_id_method = 'init';
 
 //var Ordered_String_List = Data_Structures.Ordered_String_List;
 
-const Mini_Context = require('../Mini_Context');
-const Data_Model = require('../Data_Model');
-
 var is_js_native = function (obj) {
     var t = tof(obj);
 
@@ -116,6 +132,15 @@ class Data_Object extends Data_Model {
 		}
         this.__type_name = spec.__type_name || 'data_object';
 
+        // And set the data_type???
+        //   Even different ways of doing data type and data type checks?
+
+        // Validation function...
+        //   Maybe not necessarily data type, but more specific to that field / value.
+
+
+
+
         // Will be better to use obext for fields.
 
         // Does seem worth not using this any longer....
@@ -126,69 +151,21 @@ class Data_Object extends Data_Model {
         //     Could even modify obext so it passes through fields from lang-mini.
 
 
+        // A better system to set / assign fields?
+        //   Can break backward compatibility a bit in the new version.
+
 
         if (fields) this.set_fields_from_spec(fields, spec);
+
+
 
         // Should incorporate data types within fields.
         //   Maybe grammer too....?
 
         this.__data_object = true;
-
-        // Do need to still be concious of performance here.
-        //   This is currently working as a basis for jsgui controls, which do work efficiently at the moment.
-        //     Will need to be careful about changing the API.
-        //     Could even write code at a higher level that would check which API is being used and use that....
-        // Late 2023 - Seems as though there is a chance to make breaking changes here and fix them.
-        //   So long as it makes the overall concepts clearer, and aids in more concise code.
-
-        // don't want the .value() function, use getters and setters, or maybe the obext field.
-
-        // Data_Value could have a 'name' or 'key_name' or 'key' property.
-        //   Could use 'key' and 'name' interchangably.
-        //   data_value.value ????    seems like it would be needed on some levels.
-        //     maybe .toObject, toNumber, toString, toArray, toJSON, toInteger, toHashString????
-
-        // 
-
-        // .to(type)
-
-
-
-
-        //   
-
-
-
-
-
-
-
-
-
-
-
-        //if (!spec) spec = {};
-        // if it's abstract call the abstract_init.
-
-        //console.log('1** spec', spec);
-
-        // Possibly will not need to handle abstract Data_Objects.
-        //   It was done as an alternative to not using new with the old-style constructors, which was allowed, and could
-        //     be detected.
-
-        // Not sure about removing this.
-
-        //   Easier of definition of fields.
-        //     Fields as provided by obext. See about further support for that.
-        //     See about those fields supporting Grammar or other type capabilities from lang-mini.
-
-        // See about a little bit more code to get lang-mini enforcing (or providing enforcement functions to support) specific types,
-        //   incl ranges within types, number of DP (auto-rounding).
-
-        // 
-
-
-
+        
+        // Basically never using abstract specs any longer.
+        //   Could maybe be abstract or not depending on context.
 
         if (spec.abstract === true) {
             this._abstract = true;
@@ -302,6 +279,10 @@ class Data_Object extends Data_Model {
 
 
     'set_fields_from_spec'(fields, spec) {
+
+        // Definitely looks like it's worth depricating this, and using a more advanced type of field, using the field function from
+        //  lang-mini (new in late 2023 to lang-mini)
+
         // obext fields don't work like this.
         //   Should do more to support obext fields, powerful functionality that raises change events.
 
@@ -309,6 +290,9 @@ class Data_Object extends Data_Model {
 
         // So model.background.color would be a field (somehow???)
         //   Make some advances on this level, and then integrate it into an app.
+
+        console.trace();
+        throw 'Deprecating in new Data_Object version for now.'
 
 
 
@@ -345,7 +329,12 @@ class Data_Object extends Data_Model {
         return Object.keys(this._);
     }
 
+    // fromJSON
     'toJSON'() {
+
+        // Just the data inside it instead I think.
+        //   Just data as JSON.
+
         var res = [];
         res.push('Data_Object(' + JSON.stringify(this._) + ')');
         return res.join('');
@@ -370,6 +359,7 @@ class Data_Object extends Data_Model {
     }
     */
 
+    // using _relationships or whatever
 
     get parent() {
         return this._parent;
@@ -435,6 +425,7 @@ class Data_Object extends Data_Model {
 
     // 18/12/2016 Will remove constraints, then make them much more functional.
     
+    //  Go through the keys....
 
     'each'(callback) {
         each(this._, callback);
@@ -442,6 +433,8 @@ class Data_Object extends Data_Model {
 
 
     // could make this polymorphic so that it
+    //   sibling_index I think.
+
     'position_within'(parent) {
         var p_id = parent._id();
         //console.log('p_id ' + p_id);
@@ -466,7 +459,13 @@ class Data_Object extends Data_Model {
     // Maybe just 'remove' function.
     //  This may be needed with multiple parents, which are not being used at the moment.
 
+    // ???? late 2023
+
     'remove_from'(parent) {
+
+        // parent.remove this....
+        // this.parent = undefined;
+
         var p_id = parent._id();
 
         if (this._parents && is_defined(this._parents[p_id])) {
@@ -495,6 +494,15 @@ class Data_Object extends Data_Model {
     // Maybe only do this with the fields anyway
 
     'load_from_spec'(spec, arr_item_names) {
+
+        // Deprecate for the moment.
+        //   Fields that auto-load from spec seem best.
+
+        console.trace();
+        throw 'Deprecated in new Data_Object version';
+
+        // set_values_from_spec???
+
         //var that = this;
         each(arr_item_names, (v) => {
             var spec_item = spec[v];
@@ -538,7 +546,15 @@ class Data_Object extends Data_Model {
     'get'() {
         var a = arguments;
         a.l = arguments.length;
+        
+        // More specific about typed processing?
+        //   The functional types may be best, and have them use mfp as well.
+        //     That relies on sigs.
+        
+
         var sig = get_a_sig(a, 1);
+
+
         var do_typed_processing = false;
 
         // Not sure about this 'typed processing'.
@@ -617,10 +633,6 @@ class Data_Object extends Data_Model {
     // May look into seeing where Data_Value is used in the current system too.
     //   Could see about further incorportating its use (in places).
 
-
-
-
-
     //'set': fp(function(a, sig) {
     'set'() {
 
@@ -649,7 +661,7 @@ class Data_Object extends Data_Model {
         //    input_processors = this._get_input_processors();
         //}
 
-        if (a.l == 2 || a.l == 3) {
+        if (a.l === 2 || a.l === 3) {
             var property_name = a[0],
                 value = a[1];
             var ta2 = tof(a[2]);
@@ -843,10 +855,7 @@ class Data_Object extends Data_Model {
 
                     });
                     return res;
-                }
-
-                // C for collection?
-                if (sig === '[c]') {
+                } else if (sig === '[c]') {
                     //this._[]
                     this._[property_name] = value;
                     this.raise_event('change', [property_name, value]);
@@ -869,7 +878,7 @@ jsgui.map_classes = jsgui.map_classes || {};
 // seems like an overlap with the new jsgui.fromObject function.
 //  That will initially go in the Enhanced_Data_Object module, or jsgui-enh
 
-var dobj = (obj, data_def) => {
+const dobj = (obj, data_def) => {
     // could take a data_def?
     // Could use the enhanced data object if we patch backwards?
     //  So Enhanced_Data_Object could hopefully patch backwards in the code?

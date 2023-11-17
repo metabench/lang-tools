@@ -40,8 +40,12 @@ class Data_Model extends Evented_Class {
             this.context = spec.context;
 
         }
+        if (spec.name) {
+            this.name = spec.name;
+        }
         this.__type = 'data_model';
     }
+
     
 };
 

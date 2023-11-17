@@ -9,6 +9,10 @@
 const lang_mini = require('lang-mini');
 const collective = require('./collective');
 
+const {more_general_equals} = require('./Data_Model/new/tools');
+
+lang_mini.equals = more_general_equals;
+
 lang_mini.collective = collective;
 lang_mini.collect = collective;
 

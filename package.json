@@ -3,8 +3,8 @@
     "main": "lang.js",
     "license": "MIT",
     "dependencies": {
-        "fnl": "^0.0.33",
-        "lang-mini": "0.0.37"
+        "fnl": "^0.0.35",
+        "lang-mini": "0.0.38"
     },
     "scripts": {
         "start": "node ./lang",
@@ -22,5 +22,5 @@
         "type": "git",
         "url": "https://github.com/metabench/lang-tools.git"
     },
-    "version": "0.0.29"
+    "version": "0.0.30"
 }
