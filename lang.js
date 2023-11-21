@@ -29,6 +29,8 @@ const Collection = require('./Data_Model/old/Collection');
 const Data_Object = require('./Data_Model/Data_Object');
 const Data_Value = require('././Data_Model/Data_Value');
 const Data_Model = require('././Data_Model/Data_Model');
+const Immutable_Data_Value = require('././Data_Model/new/Immutable_Data_Value');
+const Immutable_Data_Model = require('././Data_Model/new/Immutable_Data_Model');
 const Doubly_Linked_List = require('./doubly-linked-list');
 
 const Ordered_KVS = require('./ordered-kvs');
@@ -47,6 +49,8 @@ lang_mini.B_Plus_Tree = B_Plus_Tree;
 lang_mini.Collection = Collection;
 lang_mini.Data_Object = Data_Object;
 lang_mini.Data_Value = Data_Value;
+lang_mini.Immutable_Data_Model = Immutable_Data_Model;
+lang_mini.Immutable_Data_Value = Immutable_Data_Value;
 lang_mini.Data_Model = Data_Model;
 lang_mini.Doubly_Linked_List = Doubly_Linked_List;
 //lang_mini.Evented_Class = Evented_Class;

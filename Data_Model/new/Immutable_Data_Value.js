@@ -24,7 +24,6 @@ const ldarkPurple = x => `\x1b[38;5;54m${x}\x1b[0m`;
 
 // Copy the value when it gets set somehow.
 
-
 class Immutable_Data_Value extends Immutable_Data_Model {
 
     constructor(spec = {}) {
