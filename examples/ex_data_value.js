@@ -543,12 +543,12 @@ const syncing_models = () => {
 
         data_value.on('validate', e => {
             //const {name, old, value} = e;
-            console.log('dv validate e', e);
+            //console.log('dv validate e', e);
         });
 
         res.on('validate', e => {
             //const {name, old, value} = e;
-            console.log('dv validate e', e);
+            //console.log('dv validate e', e);
         });
 
         // Validation events would also make a lot of sense, especially when showing and keeping updated validation status info
