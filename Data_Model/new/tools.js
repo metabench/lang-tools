@@ -38,60 +38,75 @@ const more_general_equals = (that, other) => {
             return true;
         } else {
 
+            if (that === undefined) {
+                return false;
+            } else {
+                const {value} = that;
 
-            const {value} = that;
+                const t_value = tof(value), t_other = tof(other);
 
-            const t_value = tof(value), t_other = tof(other);
+                console.log('[t_value, t_other]', [t_value, t_other]);
+                //console.log('*** [value, other]', [value, other]);
 
-            //console.log('[t_value, t_other]', [t_value, t_other]);
-            //console.log('*** [value, other]', [value, other]);
-
-            if (t_value === t_other) {
-
-                if (typeof value.equals === 'function' && typeof other.equals === 'function') {
-                    return value.equals(other);
-                } else {
+                if (t_value === t_other) {
+                    console.log('*** [value, other]', [value, other]);
 
                     if (value === other) {
                         return true;
                     } else {
-
-                        if (t_value === 'number' || t_value === 'string' || t_value === 'boolean') {
-                            return value === other;
+                        if (typeof value.equals === 'function' && typeof other.equals === 'function') {
+                            return value.equals(other);
                         } else {
 
-                            if (t_value === 'array') {
-                                // or tostring / tojson???
-
-                                if (value.length === other.length) {
-                                    // compare each of them....
-
-                                    let res = true, c = 0, l = value.length;
-
-                                    do {
-                                        res = more_general_equals(value[c], other[c]);
-                                        c++;
-                                    } while (res === true && c < l)
-                                    return res;
-
-                                } else {
-                                    return false;
-                                }
-
+                            if (value === other) {
+                                return true;
                             } else {
-                                console.log('[value, other]', [value, other]);
-                                console.trace();
-                                throw 'NYI';
 
+                                if (t_value === 'number' || t_value === 'string' || t_value === 'boolean') {
+                                    return value === other;
+                                } else {
+
+                                    if (t_value === 'array') {
+                                        // or tostring / tojson???
+
+                                        if (value.length === other.length) {
+                                            // compare each of them....
+
+                                            let res = true, c = 0, l = value.length;
+
+                                            do {
+                                                res = more_general_equals(value[c], other[c]);
+                                                c++;
+                                            } while (res === true && c < l)
+                                            return res;
+
+                                        } else {
+                                            return false;
+                                        }
+
+                                    } else {
+                                        console.log('[value, other]', [value, other]);
+                                        console.trace();
+                                        throw 'NYI';
+
+                                    }
+                                }
                             }
                         }
                     }
+
+
+                    
+                } else {
+                    // But number parsing etc....
+                    return false;
                 }
-            } else {
-                // But number parsing etc....
-                return false;
+
+
             }
 
+
+            
         }
 
 

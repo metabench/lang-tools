@@ -4,6 +4,8 @@ var jsgui = require('lang-mini');
 
 const {more_general_equals} = require('./tools');
 
+const Value_Set_Attempt = require('./Value_Set_Attempt');
+
 const Data_Model = require('../Data_Model');
 const Immutable_Data_Model = require('./Immutable_Data_Model');
 const Immutable_Data_Value = require('./Immutable_Data_Value');
@@ -121,12 +123,37 @@ class Data_Value extends Data_Model {
             this.context = spec.context;
         }
         const {data_type, context} = this;
+
+        let local_js_value;
         if (data_type) {
 
             // Maybe make helper functions to call from below.
 
-            let local_js_value;
+            
             const that = this;
+
+            // Use this for a multi-level view data model.
+            //   It the html view or lowest level of the view model would be a string type.
+            //   Then there may be a model on top of that that is an integer type.
+
+            // Need to pay attention to the precise layering of the simpler lower level things, to make a good platform for higher level things.
+
+            // Set up a Text_Input so that it uses an underlying String Data_Value.
+            //   Though maybe have a maxLength property / constraint.
+
+
+            // Worth making Text_Input examples.
+
+            
+
+
+
+
+
+
+
+
+
 
             if (data_type === String) {
 
@@ -140,6 +167,24 @@ class Data_Value extends Data_Model {
                 //   Though likely still need to make it able to handle a variety of scenarios.
 
                 // Though does need to follow a somewhat similar pattern to the code below.
+
+                // attempt_set would make a lot of sense, implementing it on a lower level, using it for .value property.
+
+                // attempt_set_value perhaps too....
+
+
+                // Determining how 'set' will work ahead of time....
+
+                // generate_set_plan
+                // run_set_plan
+
+                // validate_set_operation????
+
+                // can_accept_value????
+
+                // attempt_set_value could be most effective here....
+
+
 
 
                 Object.defineProperty(this, 'value', {
@@ -194,9 +239,6 @@ class Data_Value extends Data_Model {
                                     console.trace();
                                     throw 'stop';
                                 }
-
-
-
 
                             } else {
 
@@ -267,19 +309,9 @@ class Data_Value extends Data_Model {
                 //console.trace();
                 //throw 'NYI';
 
-
-
-
-
-
             } else if (data_type instanceof Data_Type) {
 
                 // Is it an instance of Data_Type??? That is in lang-mini.
-
-
-
-
-
 
                 const {wrap_properties, property_names, property_data_types, wrap_value_inner_values, value_js_type,
                     abbreviated_property_names, named_property_access, numbered_property_access, parse_string} = data_type;
@@ -1332,9 +1364,280 @@ class Data_Value extends Data_Model {
         }
 
 
+
+        // Not sure exactly where parsing will fit in.
+        //   Possibly have it done as part of the attempt if it's possible.
+        //   Check if the value type / data type is parsable / transformable to the / one of the supported data types.
+        //     Currently only one .data_type.
+        //     String parsing may be quite built-into it. Though maybe consider it io transformations in general.
+
+
+
+        
+        // See about a more refined value setting mechanism / set of them.
+        //   A basic order of:
+        //    seeing the structure of the js value in place???
+        //      (and the current value as immutable)
+        //       comparing with new value.
+        //         could reject a change on account of it being the same value (ie no change(s))
+
+
+
+        //    seeing this.data_type, seeing if anything needs to be made / wrapped.
+        //    seeing the incoming value, working with it whether its wrapped or not.
+        //    
+
+        //    seeing if it would work (including parsed value)
+        //   
+
+
+        // Will be used in syncing in some controls, maybe some other places.
+        //   
+
+        const attempt_set_value = this.attempt_set_value = (value) => {
+
+            // Getting the current / immutable value here could help....
+            //   Though it could depend on the type of the current local_js_value....
+
+            // And of course will need to raise the appropriate event(s) when set.
+
+            const get_local_js_value_copy = () => {
+                const tljsv = tof(local_js_value);
+
+                // return it if its undefined / number / string / a few others....
+
+                if (tljsv === 'undefined' || tljsv === 'string' || tljsv === 'number') {
+                    return local_js_value;
+                } else {
+                    console.log('local_js_value', local_js_value);
+                    console.log('tljsv', tljsv);
+
+                    console.trace();
+                    throw 'stop';
+                }
+
+
+                
+
+            }
+
+            const old_local_js_value = get_local_js_value_copy();
+
+            //console.log('old_local_js_value', old_local_js_value);
+
+
+            // and see if they are equal or not....
+
+            const old_equals_new = more_general_equals(old_local_js_value, value);
+
+            if (old_equals_new === true) {
+                return new Value_Set_Attempt({success: false, equal_values: true});
+            } else {
+
+                //console.log('Data_Value attempt_set_value');
+                //console.log('this.data_type', this.data_type);
+                
+                //console.log('this.data_type instanceof Data_Type', this.data_type instanceof Data_Type);
+
+                //console.log('value', value);
+
+                if (this.data_type === undefined) {
+                    //this.value = spec.value;
+                    // 
+
+                    local_js_value = value;
+
+                    const o_change = {
+                        name: 'value',
+                        old: old_local_js_value,
+                        value
+                    }
+                    this.raise('change', o_change);
+
+
+
+                    return new Value_Set_Attempt({success: true, value});
+                } else if (this.data_type instanceof Data_Type) {
+                    // Is the data valid according to that data type?
+
+                    //console.log('this.data_type', this.data_type);
+
+                    // can we parse the value???
+                    const t_value = tof(value);
+                    //console.log('t_value', t_value);
+                    if (t_value === 'string') {
+                        // Then is there a parse function for the data_type???
+
+                        //console.log('!!this.data_type.parse_string', !!this.data_type.parse_string);
+
+                        if (this.data_type.parse_string) {
+                            const parsed_value = this.data_type.parse_string(value);
+                            //console.log('parsed_value', parsed_value);
+                            if (parsed_value !== undefined) {
+                                //console.log('parsed_value', parsed_value);
+
+                                // then attempt to set it with the parsed value...?
+                                const res = attempt_set_value(parsed_value);
+
+                                //console.log('** res', res);
+
+                                res.parsed = true;
+                                return res;
+
+
+
+                            } else {
+                                // an error parsing / validating.
+
+                                return new Value_Set_Attempt({success: false, value});
+
+
+                            }
+
+
+                        } else {
+                            console.trace();
+                            throw 'NYI';
+                        }
+
+
+                    } else {
+
+                        // See if it validates....?
+                        //   Or just go ahead and set it here????
+                        //     Needs to cover all the various conditions / structures too.
+
+                        // A number - kind of a special case because numbers in js are immutable anyway.
+
+                        if (t_value === 'number') {
+                            const validation = this.data_type.validate(value);
+                            //console.log('validation', validation);
+
+                            if (validation === true) {
+                                // change the local js value....???
+
+                                // and raise the change event....
+
+                                local_js_value = value;
+                                const o_change = {
+                                    name: 'value',
+                                    old: old_local_js_value,
+                                    value
+                                }
+                                this.raise('change', o_change);
+
+                                return new Value_Set_Attempt({success: true, old: old_local_js_value, value});
+
+                            } else {
+                                // 
+
+                                //console.log('validation failed');
+                                return new Value_Set_Attempt({success: false, value});
+
+                            }
+
+                        } else {
+
+                            console.log('t_value', t_value);
+                            console.trace();
+                            throw 'NYI';
+
+                        }
+
+
+
+
+
+
+                        
+
+                    }
+
+
+
+                    
+
+
+
+
+                } else if (this.data_type === String) {
+
+                    //console.log('value', value);
+                    //console.log('typeof value', typeof value);
+
+                    if (typeof value === 'number') {
+                        const res = attempt_set_value(value + '');
+                        res.data_type_transformation = ['number', 'string'];
+                        return res;
+
+                    } else if (typeof value === 'string') {
+                        //const res = attempt_set_value(value + '');
+                        //res.data_type_transformation = ['number', 'string'];
+                        //return res;
+
+                        local_js_value = value;
+                        const o_change = {
+                            name: 'value',
+                            old: old_local_js_value,
+                            value
+                        }
+                        this.raise('change', o_change);
+
+                        return new Value_Set_Attempt({success: true, old: old_local_js_value, value});
+
+
+                        //return new Value_Set_Attempt({success: true});
+                    } else {
+                        console.trace();
+                        throw 'NYI';
+                    }
+
+                    
+                } else {
+
+                    // this.data_type === String????
+
+
+                    console.log('this.data_type', this.data_type);
+
+                    // if it's a Data_Type....
+
+                    
+                    
+                    console.trace();
+                    throw 'NYI';
+                    
+                }
+
+                
+
+
+                //console.trace();
+                //throw 'stop';
+
+
+                // Probably returning a Value_Set_Attempt would make most sense here.
+
+
+                //const res = new Value_Set_Attempt();
+
+            }
+
+
+
+            // See if it validates....
+            
+
+
+        }
+
+
+
         this.__type = 'data_value';
         this._relationships = {};
     }
+
+
     toImmutable() {
         const {context, data_type, value} = this;
         const res = new Immutable_Data_Value({

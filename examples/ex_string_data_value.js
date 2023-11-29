@@ -9,6 +9,9 @@ const s_dv = new Data_Value({data_type: String});
 s_dv.on('validate', e_validate => {
     console.log('e_validate', e_validate);
 })
+s_dv.on('change', e_change => {
+    console.log('e_change', e_change);
+})
 
 console.log('s_dv', s_dv);
 console.log('s_dv.data_type', s_dv.data_type);
@@ -26,6 +29,8 @@ s_dv.value = 2;
 
 
 s_dv.value = 1 + '';
+
+s_dv.value = 'five';
 
 
 console.log('s_dv', s_dv);
