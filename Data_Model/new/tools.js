@@ -45,11 +45,11 @@ const more_general_equals = (that, other) => {
 
                 const t_value = tof(value), t_other = tof(other);
 
-                console.log('[t_value, t_other]', [t_value, t_other]);
+                //console.log('[t_value, t_other]', [t_value, t_other]);
                 //console.log('*** [value, other]', [value, other]);
 
                 if (t_value === t_other) {
-                    console.log('*** [value, other]', [value, other]);
+                    //console.log('*** [value, other]', [value, other]);
 
                     if (value === other) {
                         return true;
@@ -104,9 +104,6 @@ const more_general_equals = (that, other) => {
 
 
             }
-
-
-            
         }
 
 
