@@ -20,15 +20,7 @@ const {Evented_Class} = require('lang-mini');
     However, supporting very large data throughput won't be the objective of this framework.
     Easily supporting large amounts of data could help though.
 
-    
 
-
-if (spec.id) {
-    this.__id = spec.id;
-}
-if (spec.__id) {
-    this.__id = spec.__id;
-}
 
 */
 
@@ -45,8 +37,6 @@ class Data_Model extends Evented_Class {
         }
         this.__type = 'data_model';
     }
-
-    
 };
 
 module.exports = Data_Model;

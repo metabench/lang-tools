@@ -3,6 +3,7 @@ var jsgui = require('lang-mini');
 const {more_general_equals} = require('./tools');
 const Data_Model = require('../Data_Model');
 const Immutable_Data_Model = require('./Immutable_Data_Model');
+const Immutable_Base_Data_Value = require('./Immutable_Base_Data_Value');
 
 const {is_defined, input_processors, field, tof, each} = jsgui;
 
@@ -24,7 +25,7 @@ const ldarkPurple = x => `\x1b[38;5;54m${x}\x1b[0m`;
 
 // Copy the value when it gets set somehow.
 
-class Immutable_Data_Value extends Immutable_Data_Model {
+class Immutable_Data_Value extends Immutable_Base_Data_Value {
 
     constructor(spec = {}) {
         super(spec);
@@ -37,61 +38,10 @@ class Immutable_Data_Value extends Immutable_Data_Model {
             this.context = spec.context;
         }
 
-        // So here field ('value') is doing most of the work here.
-
-        //  Do want to see about setting up the sub-fields too....
-
         const {data_type, context} = this;
         
         if (data_type) {
-
-            const {wrap_properties, property_names, property_data_types, wrap_value_inner_values, value_js_type,
-                abbreviated_property_names, named_property_access, numbered_property_access} = data_type;
-
-
-            let num_properties;
-
-            if (property_names) {
-                if (property_names.length === property_data_types.length) {
-                    num_properties = property_names.length;
-
-
-                    if (numbered_property_access) {
-                        //console.log('will (possibly later on) set up numbered property access - num_properties:', num_properties);
-
-
-
-
-                    }
-
-
-                }
-            }
             
-            //console.log('Data_Value 2.0 data_type.value_js_type', value_js_type);
-
-            // Need to recreate an array from the spec value.
-            //  Or some other things... copy / clone objects, and copy / clone everything inside objects and arrays.
-
-
-            // parse_to_immutable???
-
-            // so if the value is an array, if it's an object, number, string, boolean....?
-
-            // potentially_recreate_spec_value???
-
-            // clone_spec_value???
-
-
-
-            //const value = spec.value;
-
-
-
-
-            //const local_js_value = value; //const????
-            // data_type.value_js_type perhaps??
-
 
             const to_local_js_value = (value) => {
                 //
@@ -149,60 +99,8 @@ class Immutable_Data_Value extends Immutable_Data_Model {
                 }
             });
             
-            // Probably will not be wrapping inner values?
-            //   Or do so to be compatible with normal Data_Value
-
-            /*
-            if (wrap_value_inner_values) {
-
-                if (property_names) {
-
-                    const num_properties = property_names.length;
-                    for (let index = 0; index < num_properties; index++) {
-                        const name = property_names[index];
-                        const data_type = property_data_types[index];
-                    }
-
-                }
-
-
-            }
-            */
-
-
-            if (data_type.numbered_property_access === true) {
-                // Then need to make an array, and create accessors for that array.
-
-                // Only if the properties are named for the moment, as that's the only way we know how many...
-
-                if (data_type.property_names) {
-                    if (data_type.property_names.length <= 256) {
-                        // Go through them creating accessors to the inner value...
-
-                        //console.log('should set up Data_Value 2.0 numbered property access');
-
-                    }
-                }
-            }
         } else {
-            // Just as a Field?
-            //   Possibly would want to wrap inner value(s).
-
-
-
-            // it's read-only!
-
-            //console.log('Data_Value spec.value', spec.value);
-
-            // A read-only field???
-
-            // But need to clone / copy that value???
-
-            // And if it contains wrapped items, need to get the Immutable_Data_Value versions that wrap them instead.
-            //   
-
-            // Would need to copy / clone a local value from the spec.
-
+            
             let value;
 
             // then if it's an array, would need to slice it, and (possibly) wrap inner items as being immutable too.
@@ -218,13 +116,11 @@ class Immutable_Data_Value extends Immutable_Data_Model {
             } else {
                 value = spec.value;
             }
-
             Object.defineProperty(this, 'value', {
                 get() {
                     return value
                 }
             })
-
             //field(this, 'value', spec.value);
         }
         this.__type = 'data_value';
@@ -239,21 +135,8 @@ class Immutable_Data_Value extends Immutable_Data_Model {
     }
 
     equals(other) {
-        // Are they both Data_Values???
-
-        // or use Data_Model ???
-
-        // make a general equals here, give it this for the moment.
-        //   the more general equals will be used recursively for comparing arrays.
-
-        
 
         return more_general_equals(this, other);
-
-
-
-        
-
     }
 
     
@@ -269,62 +152,10 @@ class Immutable_Data_Value extends Immutable_Data_Model {
         });
         return res;
     }
-
-    
-
-    // .value =
-    //   Though .set could have more input, eg a format shifter????
-
-    /*
-    'set'(val) {
-        this.value = val;
-    }
-    */
     'get'() {
         return this.value;
     }
 
-    /*
-
-    [util.inspect.custom](depth, opts) {
-        //return 'foo = ' + this.foo.toUpperCase();
-
-        // But then display it in a specific color....
-
-        //return ldarkPurple(this.value);
-
-        const {value} = this;
-
-        if (value instanceof Array) {
-            // could go through each item in that array.
-
-            let res = '[ ';
-            let first = true;
-
-            each(value, item => {
-                if (!first) {
-                    res = res + ', ';
-                } else {
-                    first = false;
-                }
-
-                if (item instanceof Data_Model) {
-                    const item_value = item.value;
-                    res = res + ldarkPurple(item_value)
-
-                } else [
-                    res = res + ldarkPurple(item)
-                ]
-
-            })
-            res = res + ' ]';
-            return res;
-
-        } else {
-            return ldarkPurple(this.value);
-        }
-    }
-    */
 
     'toString'() {
         //return stringify(this.get());
@@ -415,70 +246,6 @@ class Immutable_Data_Value extends Immutable_Data_Model {
         return this._;
 
     }
-
-    /*
-    'parent'() {
-
-        // Likely should (greatly) simplify this.
-        //   Sometimes maybe would not be needed.
-
-
-        var a = arguments; a.l = arguments.length; var sig = get_a_sig(a, 1);
-
-        // .sibling_index instead. Clearer, matched HTML terminology in places.
-
-        var obj, index;
-        //console.log('parent sig', sig);
-        if (a.l == 0) {
-            return this._parent;
-        } else if (a.l == 1) {
-            obj = a[0];
-
-            if (!this.context && obj.context) {
-                this.context = obj.context;
-            }
-
-            var relate_by_id = function (that) {
-                var obj_id = obj._id();
-                that._relationships[obj_id] = true;
-            }
-
-            var relate_by_ref = function (that) {
-                that._parent = obj;
-            }
-            relate_by_ref(this);
-        } else if (a.l == 2) {
-            obj = a[0];
-            index = a[1];
-
-            if (!this.context && obj.context) {
-                this.context = obj.context;
-            }
-
-            this._parent = obj;
-            this._index = index;
-        }
-
-
-        const unused_even_older_code = () => {
-            if (is_defined(index)) {
-                // I think we just set the __index property.
-                //  I think a __parent property and a __index property would do the job here.
-                //  Suits DOM heirachy.
-                // A __relationships property could make sense for wider things, however, it would be easy (for the moment?)
-                // to just have .__parent and .__index
-                //
-    
-                // Not sure all Data_Objects will need contexts.
-                //  It's mainly useful for Controls so far
-            } else {
-                // get the object's id...
-    
-                // setting the parent... the parent may have a context.
-            }
-        }
-    }
-    */
 };
 
 

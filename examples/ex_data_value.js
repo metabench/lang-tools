@@ -331,7 +331,6 @@ const old = () => {
 
 }
 
-
 // then can just use it to validate data....
 
 // Only giving it the data type here....
@@ -377,16 +376,6 @@ const simple_test = () => {
     // For the moment, using Functional_Data_Type makes a lot of sense.
     //   It's more in accordance with what the JS program needs.
 
-
-
-
-
-
-
-
-
-
-
     dv_ll.value = [5, 6];
 
     console.log('dv_ll', dv_ll);
@@ -405,7 +394,7 @@ const simple_test = () => {
 //     can_contain_immutable may be a good option.
 //   Or maybe just for the moment that the values inside them that get created / copied are mutable data values.
 
-
+simple_test();
 
 const mutability = () => {
 
@@ -457,10 +446,6 @@ const mutability = () => {
     console.log('dv_ll_2', dv_ll_2);
     // The (inner js) value itself should be an array.
     //   Though it should contain Data_Values so that the can raise the change events and have the advantages of Data_Value.
-
-
-
-
 
     console.log('dv_ll_2.value', dv_ll_2.value);
 
@@ -609,6 +594,48 @@ const syncing_models = () => {
     // Really explicit code and names will help a lot with readability.
     //   Especially when 
 
+}
+syncing_models();
+
+
+// syncing_string_and_int_typed_models....?
+
+
+const syncing_string_and_int_typed_models = () => {
+
+    // Looking into validation.status as well???
+
+    // data_value.validation ????
+    // data_value.validation.status????
+
+    // data_value.external.validation.statud ????
+    //   or 'upstream' validation???
+
+    // defining an upstream and downstream when it comes to the data flows and validation???
+    //   Don't want to always have to make extra details explicit.
+
+
+    // sometimes values are not getting set properly accross types....
+
+
+
+    // Could run some kind(s) of Data_Value recoherence and validation on the client at / before activation.
+
+    // Maybe clarify client-side activate further, with a scan that's before activate and pre_activate.
+
+    // pre_activate_ctrls_dom_scan perhaps????
+
+    // Although it works currently for many things, would be worth getting into it with more specific things.
+    //   Making as much as possible work automatically and be available early on.
+
+    
+
+
+
+
+
+    
+
 
 
 
@@ -620,10 +647,16 @@ const syncing_models = () => {
 
 
 }
-syncing_models();
 
+syncing_string_and_int_typed_models();
 // Maybe some more extensive tests as well?
 //  Number of set operations per second?
+
+
+// Syncing where there is parsing involved?
+// One model is a string type and the other is integer type.
+
+
 
 
 
@@ -660,14 +693,6 @@ syncing_models();
 
 // .vld8
 // 
-
-
-
-
-
-
-
-
 
 
 const also_old = () => {
@@ -956,10 +981,6 @@ const value_change_tests = () => {
     //    .inner_js_value_that_could_even_be_an_array_or_object_so_be_careful_about_doing_array_open_sqbrakets_index_close_sqbrackets_and_expecting_the_change_event_to_fire
 
 
-
-
-
-
     dv_ll[1] = 55;
 
 
@@ -972,9 +993,9 @@ const value_change_tests = () => {
     //     Needs to make things (much) easier to do.
     //     
 
-
-
-
+    // .toJSON() with an object style output by default.
+    // .toObject() could be to a simple JS object.
+    //   Properties and then values....
 
 
     const _and_more = () => {
@@ -1001,3 +1022,12 @@ const value_change_tests = () => {
 //value_change_tests();
 
 // See about looking inside or inspecting its fields / keys...?
+
+
+// Maybe make some kinds of classes to test data models...?
+//   Or to observe what goes between them?
+
+// To set up data models in specific configurations, and do specific things expecting and looking for specific results.
+
+
+

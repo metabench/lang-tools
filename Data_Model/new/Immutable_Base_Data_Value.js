@@ -6,8 +6,6 @@ const Immutable_Data_Model = require('./Immutable_Data_Model');
 
 const {is_defined, input_processors, field, tof, each} = jsgui;
 
-const setup_base_data_value_value_property = require('./setup_base_data_value_value_property');
-
 // What type is the value???
 
 // Examples / tests of using this in this module could help.
@@ -31,7 +29,7 @@ const ldarkPurple = x => `\x1b[38;5;54m${x}\x1b[0m`;
 
 
 
-class Base_Data_Value extends Data_Model {
+class Immutable_Base_Data_Value extends Immutable_Data_Model {
 
     constructor(spec = {}) {
         super(spec);
@@ -49,15 +47,6 @@ class Base_Data_Value extends Data_Model {
         //this._bound_events = {};
         this._relationships = {};
 
-        //console.log('Base_Data_Value spec', spec);
-
-        // Does not have the field for 'value' though....
-
-        // this.setup_value_property????
-
-
-        
-
 
         // So here field ('value') is doing most of the work here.
 
@@ -65,29 +54,7 @@ class Base_Data_Value extends Data_Model {
 
         const {data_type, context} = this;
 
-        
-        //setup_base_data_value_value_property(this);
-
-
-        // Defining the property here could work....
-
-
-
-
-        // Some kind of post-constructor function?????
-
-        // or use an event handler and event????
-
-
-        //setImmediate(() => {
-        //    if (spec.value) {
-        //        this.value = spec.value;
-        //    }
-        //})
-
     }
-
-    
 
     equals(other) {
         // Are they both Data_Values???
@@ -114,7 +81,7 @@ class Base_Data_Value extends Data_Model {
 
 
 
-
+    
 
     /*
     toImmutable() {
@@ -168,7 +135,7 @@ class Base_Data_Value extends Data_Model {
             this.__id = this.context.new_id(this.__type_name || this.__type);
         } else {
             if (!is_defined(this.__id)) {
-                throw 'Data_Value should have context';
+                throw 'Immutable_Base_Data_Value should have context';
                 this.__id = new_data_value_id();
             }
         }
@@ -177,4 +144,4 @@ class Base_Data_Value extends Data_Model {
 
 }
 
-module.exports = Base_Data_Value;
+module.exports = Immutable_Base_Data_Value;
