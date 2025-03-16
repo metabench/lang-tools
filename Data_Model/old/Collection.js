@@ -36,6 +36,14 @@ var dop = Data_Object.prototype;
 
 
 
+// Want to enable silent updates.
+//   So it does not raise events.
+
+
+
+// .silent property.
+//   would check for it before raising events.
+
 
 
 
@@ -559,6 +567,11 @@ class Collection extends Data_Object {
     }
 
     'push' (value) {
+
+        const {silent} = this;
+
+
+
         let tv = tof(value);
         let fn_index = this.fn_index;
         let idx_key, has_idx_key = false,
@@ -574,54 +587,66 @@ class Collection extends Data_Object {
             //console.log('pushing value', value);
             //this.index_system.unsafe_add_object(value);
             this._arr_idx++;
-            const e = {
-                'target': this,
-                'item': value,
-                'value': value,
-                'position': pos,
-                'name': 'insert'
+
+
+            if (!silent) {
+                const e = {
+                    'target': this,
+                    'item': value,
+                    'value': value,
+                    'position': pos,
+                    'name': 'insert'
+                }
+                this.raise('change', e);
             }
-            this.raise('change', e);
+
+            
         } else if (tv === 'collection') {
             pos = this._arr.length;
             this._arr.push(value);
             this._arr_idx++;
 
-            const e = {
-                'target': this,
-                'item': value,
-                'value': value,
-                'position': pos,
-                'name': 'insert'
+            if (!silent) {
+                const e = {
+                    'target': this,
+                    'item': value,
+                    'value': value,
+                    'position': pos,
+                    'name': 'insert'
+                }
+                this.raise('change', e);
             }
-            this.raise('change', e);
 
         } else if (tv === 'data_object' || tv === 'control') {
             pos = this._arr.length;
             // Should not need a context or ID just to be put in place.
             this._arr.push(value);
             this._arr_idx++;
-            const e = {
-                'target': this,
-                'item': value,
-                'value': value,
-                'position': pos,
-                'name': 'insert'
+            if (!silent) {
+                const e = {
+                    'target': this,
+                    'item': value,
+                    'value': value,
+                    'position': pos,
+                    'name': 'insert'
+                }
+                this.raise('change', e);
             }
-            this.raise('change', e);
         } else if (tv === 'array') {
             const new_coll = new Collection(value);
             pos = this._arr.length;
             // Should not need a context or ID just to be put in place.
             this._arr.push(new_coll);
-            const e = {
-                'target': this,
-                'item': new_coll,
-                'value': new_coll,
-                'position': pos,
-                'name': 'insert'
+            if (!silent) {
+                const e = {
+                    'target': this,
+                    'item': value,
+                    'value': value,
+                    'position': pos,
+                    'name': 'insert'
+                }
+                this.raise('change', e);
             }
-            this.raise('change', e);
         }
 
         if (tv === 'string' || tv === 'number') {
@@ -632,14 +657,16 @@ class Collection extends Data_Object {
             pos = this._arr.length;
             // Should not need a context or ID just to be put in place.
             this._arr.push(dv);
-            const e = {
-                'target': this,
-                'item': dv,
-                'value': dv,
-                'position': pos,
-                'name': 'insert'
+            if (!silent) {
+                const e = {
+                    'target': this,
+                    'item': value,
+                    'value': value,
+                    'position': pos,
+                    'name': 'insert'
+                }
+                this.raise('change', e);
             }
-            this.raise('change', e);
         }
         if (has_idx_key) {
             this.index.put(idx_key, pos);
