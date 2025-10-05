@@ -1,0 +1,349 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2560 1600" style="background: #f8f9fa;">
+  <defs>
+    <style>
+      .title { font: bold 48px 'Segoe UI', Arial, sans-serif; fill: #1a1a1a; }
+      .subtitle { font: 32px 'Segoe UI', Arial, sans-serif; fill: #404040; }
+      .section-title { font: bold 32px 'Segoe UI', Arial, sans-serif; fill: #2c3e50; }
+      .file-name { font: 20px 'Consolas', monospace; fill: #2d2d2d; }
+      .code { font: 16px 'Consolas', monospace; fill: #0066cc; }
+      .comment { font: italic 16px 'Segoe UI', Arial, sans-serif; fill: #666666; }
+      .label { font: 20px 'Segoe UI', Arial, sans-serif; fill: #333333; }
+      .annotation { font: 18px 'Segoe UI', Arial, sans-serif; fill: #555555; }
+      .warning { font: bold 20px 'Segoe UI', Arial, sans-serif; fill: #e74c3c; }
+      
+      .old-box { fill: #ecf0f1; stroke: #95a5a6; stroke-width: 3; }
+      .new-box { fill: #d5f4e6; stroke: #27ae60; stroke-width: 3; }
+      .wrapper-box { fill: #fff3cd; stroke: #ffc107; stroke-width: 3; }
+      .export-box { fill: #e3f2fd; stroke: #2196f3; stroke-width: 3; }
+      
+      .arrow { stroke: #34495e; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .require-arrow { stroke: #e67e22; stroke-width: 2.5; fill: none; marker-end: url(#req-arrow); }
+      .export-arrow { stroke: #2196f3; stroke-width: 2.5; fill: none; marker-end: url(#exp-arrow); stroke-dasharray: 6,3; }
+      
+      .folder-icon { fill: #f39c12; stroke: #d68910; stroke-width: 2; }
+      .file-icon { fill: #ffffff; stroke: #7f8c8d; stroke-width: 1.5; }
+    </style>
+    
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#34495e" />
+    </marker>
+    
+    <marker id="req-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#e67e22" />
+    </marker>
+    
+    <marker id="exp-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#2196f3" />
+    </marker>
+  </defs>
+  
+  <!-- Title -->
+  <text x="1280" y="70" text-anchor="middle" class="title">Directory Structure: "new" vs "old" Pattern</text>
+  <text x="1280" y="115" text-anchor="middle" class="subtitle">Legacy Code Coexistence with Active Development</text>
+  
+  <!-- Main explanation box -->
+  <g transform="translate(200, 150)">
+    <rect width="2160" height="120" rx="10" fill="#e8f4f8" stroke="#3498db" stroke-width="2"/>
+    <text x="1080" y="35" text-anchor="middle" class="section-title" style="fill: #2c3e50;">The Pattern</text>
+    <text x="1080" y="70" text-anchor="middle" class="annotation" style="font-size: 20px;">
+      Files in <tspan style="font-weight: bold; fill: #27ae60;">new/</tspan> contain current implementations with improved APIs
+    </text>
+    <text x="1080" y="100" text-anchor="middle" class="annotation" style="font-size: 20px;">
+      Files in <tspan style="font-weight: bold; fill: #95a5a6;">old/</tspan> contain legacy implementations still used by existing code
+    </text>
+    <text x="1080" y="130" text-anchor="middle" class="annotation" style="font-size: 20px;">
+      Root wrapper files provide backwards compatibility by requiring from <tspan style="font-weight: bold;">new/</tspan> or <tspan style="font-weight: bold;">old/</tspan>
+    </text>
+  </g>
+  
+  <!-- Directory Tree Visualization -->
+  
+  <!-- Data_Model/ Root -->
+  <g transform="translate(150, 350)">
+    <rect class="folder-icon" width="60" height="50" rx="5"/>
+    <text x="80" y="33" class="section-title" style="font-size: 28px;">Data_Model/</text>
+  </g>
+  
+  <!-- Wrapper files at root -->
+  <g transform="translate(300, 440)">
+    <!-- Data_Value.js wrapper -->
+    <g transform="translate(0, 0)">
+      <rect class="wrapper-box" width="520" height="180" rx="8"/>
+      <rect class="file-icon" x="10" y="10" width="30" height="38" rx="3"/>
+      <text x="50" y="32" class="file-name" style="font-weight: bold;">Data_Value.js</text>
+      <text x="50" y="58" class="annotation">(Thin Wrapper)</text>
+      
+      <rect x="20" y="75" width="480" height="60" rx="5" fill="#fef9e7" stroke="#f39c12" stroke-width="1"/>
+      <text x="30" y="95" class="code" style="fill: #d35400;">module.exports = </text>
+      <text x="30" y="120" class="code" style="fill: #d35400;">    require('./new/Data_Value')</text>
+      
+      <text x="260" y="165" text-anchor="middle" class="comment" style="font-style: normal; font-weight: bold; fill: #f39c12;">
+        ⚠️ Just a pointer!
+      </text>
+    </g>
+    
+    <!-- Data_Object.js wrapper -->
+    <g transform="translate(600, 0)">
+      <rect class="wrapper-box" width="520" height="180" rx="8"/>
+      <rect class="file-icon" x="10" y="10" width="30" height="38" rx="3"/>
+      <text x="50" y="32" class="file-name" style="font-weight: bold;">Data_Object.js</text>
+      <text x="50" y="58" class="annotation">(Thin Wrapper)</text>
+      
+      <rect x="20" y="75" width="480" height="60" rx="5" fill="#fef9e7" stroke="#f39c12" stroke-width="1"/>
+      <text x="30" y="95" class="code" style="fill: #d35400;">module.exports = </text>
+      <text x="30" y="120" class="code" style="fill: #d35400;">    require('./old/Data_Object')</text>
+      
+      <text x="260" y="165" text-anchor="middle" class="comment" style="font-style: normal; font-weight: bold; fill: #f39c12;">
+        ⚠️ Just a pointer!
+      </text>
+    </g>
+    
+    <!-- Collection.js wrapper -->
+    <g transform="translate(1200, 0)">
+      <rect class="wrapper-box" width="520" height="180" rx="8"/>
+      <rect class="file-icon" x="10" y="10" width="30" height="38" rx="3"/>
+      <text x="50" y="32" class="file-name" style="font-weight: bold;">Collection.js</text>
+      <text x="50" y="58" class="annotation">(Thin Wrapper)</text>
+      
+      <rect x="20" y="75" width="480" height="60" rx="5" fill="#fef9e7" stroke="#f39c12" stroke-width="1"/>
+      <text x="30" y="95" class="code" style="fill: #d35400;">module.exports = </text>
+      <text x="30" y="120" class="code" style="fill: #d35400;">    require('./old/Collection')</text>
+      
+      <text x="260" y="165" text-anchor="middle" class="comment" style="font-style: normal; font-weight: bold; fill: #f39c12;">
+        ⚠️ Just a pointer!
+      </text>
+    </g>
+  </g>
+  
+  <!-- new/ directory -->
+  <g transform="translate(150, 700)">
+    <rect class="folder-icon" width="60" height="50" rx="5"/>
+    <text x="80" y="33" class="section-title" style="font-size: 28px; fill: #27ae60;">new/</text>
+    <text x="80" y="63" class="annotation" style="fill: #27ae60; font-weight: bold;">Active Development</text>
+  </g>
+  
+  <!-- new/ files -->
+  <g transform="translate(300, 780)">
+    <!-- Data_Value.js -->
+    <g transform="translate(0, 0)">
+      <rect class="new-box" width="520" height="340" rx="8"/>
+      <rect class="file-icon" x="10" y="10" width="30" height="38" rx="3"/>
+      <text x="50" y="32" class="file-name" style="font-weight: bold;">Data_Value.js</text>
+      <text x="50" y="58" class="annotation" style="fill: #27ae60;">✓ Current Implementation</text>
+      
+      <text x="30" y="90" class="code">class Data_Value extends Base_DV</text>
+      
+      <line x1="20" y1="105" x2="500" y2="105" stroke="#27ae60" stroke-width="1"/>
+      
+      <text x="30" y="130" class="annotation">Features:</text>
+      <text x="30" y="155" class="label" style="font-size: 18px;">• Typed values with validation</text>
+      <text x="30" y="180" class="label" style="font-size: 18px;">• Functional_Data_Type support</text>
+      <text x="30" y="205" class="label" style="font-size: 18px;">• String parsing (e.g., "5" → 5)</text>
+      <text x="30" y="230" class="label" style="font-size: 18px;">• Change event optimization</text>
+      <text x="30" y="255" class="label" style="font-size: 18px;">• Data_Value.sync() for pairing</text>
+      <text x="30" y="280" class="label" style="font-size: 18px;">• more_general_equals checks</text>
+      <text x="30" y="305" class="label" style="font-size: 18px;">• attempt_set_value logic</text>
+    </g>
+    
+    <!-- Base_Data_Value.js -->
+    <g transform="translate(600, 0)">
+      <rect class="new-box" width="520" height="240" rx="8"/>
+      <rect class="file-icon" x="10" y="10" width="30" height="38" rx="3"/>
+      <text x="50" y="32" class="file-name" style="font-weight: bold;">Base_Data_Value.js</text>
+      <text x="50" y="58" class="annotation" style="fill: #27ae60;">✓ Base Class</text>
+      
+      <text x="30" y="90" class="code">class Base_Data_Value</text>
+      <text x="30" y="115" class="code">    extends Data_Model</text>
+      
+      <line x1="20" y1="130" x2="500" y2="130" stroke="#27ae60" stroke-width="1"/>
+      
+      <text x="30" y="160" class="label" style="font-size: 18px;">• Minimal base implementation</text>
+      <text x="30" y="185" class="label" style="font-size: 18px;">• Property-based .value</text>
+      <text x="30" y="210" class="label" style="font-size: 18px;">• equals() method</text>
+    </g>
+    
+    <!-- Specialized types -->
+    <g transform="translate(1200, 0)">
+      <rect class="new-box" width="520" height="240" rx="8"/>
+      <text x="260" y="32" text-anchor="middle" class="file-name" style="font-weight: bold;">Specialized Types</text>
+      <text x="260" y="58" text-anchor="middle" class="annotation" style="fill: #27ae60;">✓ Type-Specific Classes</text>
+      
+      <line x1="20" y1="75" x2="500" y2="75" stroke="#27ae60" stroke-width="1"/>
+      
+      <text x="30" y="105" class="label" style="font-size: 18px;">📄 Data_String.js</text>
+      <text x="30" y="135" class="label" style="font-size: 18px;">🔢 Data_Integer.js</text>
+      <text x="30" y="165" class="label" style="font-size: 18px;">🔢 Data_Number.js</text>
+      <text x="30" y="195" class="label" style="font-size: 18px;">📦 Data_Object.js (new version)</text>
+    </g>
+    
+    <!-- Immutable variants -->
+    <g transform="translate(0, 360)">
+      <rect class="new-box" width="520" height="260" rx="8"/>
+      <text x="260" y="32" text-anchor="middle" class="file-name" style="font-weight: bold;">Immutable Variants</text>
+      <text x="260" y="58" text-anchor="middle" class="annotation" style="fill: #8e44ad;">🔒 State Snapshots</text>
+      
+      <line x1="20" y1="75" x2="500" y2="75" stroke="#8e44ad" stroke-width="1"/>
+      
+      <text x="30" y="105" class="label" style="font-size: 18px;">📄 Immutable_Data_Model.js</text>
+      <text x="30" y="135" class="label" style="font-size: 18px;">📄 Immutable_Data_Value.js</text>
+      <text x="30" y="165" class="label" style="font-size: 18px;">📄 Immutable_Base_Data_Value.js</text>
+      <text x="30" y="195" class="label" style="font-size: 18px;">📄 Immutable_Data_Integer.js</text>
+      <text x="30" y="225" class="label" style="font-size: 18px;">📄 Immutable_Data_Number.js</text>
+    </g>
+    
+    <!-- Helper files -->
+    <g transform="translate(600, 360)">
+      <rect class="new-box" width="520" height="260" rx="8"/>
+      <text x="260" y="32" text-anchor="middle" class="file-name" style="font-weight: bold;">Helper Modules</text>
+      <text x="260" y="58" text-anchor="middle" class="annotation" style="fill: #27ae60;">🔧 Support Functions</text>
+      
+      <line x1="20" y1="75" x2="500" y2="75" stroke="#27ae60" stroke-width="1"/>
+      
+      <text x="30" y="105" class="label" style="font-size: 18px;">📄 tools.js</text>
+      <text x="50" y="128" class="comment" style="font-size: 14px;">more_general_equals()</text>
+      
+      <text x="30" y="155" class="label" style="font-size: 18px;">📄 setup_base_data_value_value_property.js</text>
+      <text x="30" y="185" class="label" style="font-size: 18px;">📄 setup_data_value_data_type_set.js</text>
+      <text x="30" y="215" class="label" style="font-size: 18px;">📄 Validation_Result.js</text>
+      <text x="30" y="245" class="label" style="font-size: 18px;">📄 Value_Set_Attempt.js</text>
+    </g>
+    
+    <g transform="translate(1200, 360)">
+      <rect class="new-box" width="520" height="200" rx="8"/>
+      <text x="260" y="32" text-anchor="middle" class="file-name" style="font-weight: bold;">_Data_Value.js</text>
+      <text x="260" y="58" text-anchor="middle" class="annotation" style="fill: #e67e22;">⚠️ Experimental/Old New</text>
+      
+      <line x1="20" y1="75" x2="500" y2="75" stroke="#e67e22" stroke-width="1"/>
+      
+      <text x="260" y="110" text-anchor="middle" class="comment" style="font-size: 16px;">
+        Underscore prefix typically means
+      </text>
+      <text x="260" y="135" text-anchor="middle" class="comment" style="font-size: 16px;">
+        internal/experimental version
+      </text>
+      <text x="260" y="165" text-anchor="middle" class="comment" style="font-size: 16px;">
+        Check if still referenced before
+      </text>
+      <text x="260" y="190" text-anchor="middle" class="comment" style="font-size: 16px;">
+        making changes
+      </text>
+    </g>
+  </g>
+  
+  <!-- old/ directory -->
+  <g transform="translate(1850, 700)">
+    <rect class="folder-icon" width="60" height="50" rx="5"/>
+    <text x="80" y="33" class="section-title" style="font-size: 28px; fill: #95a5a6;">old/</text>
+    <text x="80" y="63" class="annotation" style="fill: #95a5a6; font-weight: bold;">Legacy (Still Used)</text>
+  </g>
+  
+  <!-- old/ files -->
+  <g transform="translate(2000, 780)">
+    <!-- Data_Object.js (old) -->
+    <g transform="translate(0, 0)">
+      <rect class="old-box" width="520" height="380" rx="8"/>
+      <rect class="file-icon" x="10" y="10" width="30" height="38" rx="3"/>
+      <text x="50" y="32" class="file-name" style="font-weight: bold;">Data_Object.js</text>
+      <text x="50" y="58" class="annotation" style="fill: #7f8c8d;">⚠️ Legacy Implementation</text>
+      
+      <text x="30" y="90" class="code" style="fill: #555;">class Data_Object extends DM</text>
+      
+      <line x1="20" y1="105" x2="500" y2="105" stroke="#95a5a6" stroke-width="1"/>
+      
+      <text x="30" y="135" class="label" style="font-size: 18px; fill: #555;">Legacy Features:</text>
+      <text x="30" y="165" class="label" style="font-size: 16px;">• Complex .get()/.set() methods</text>
+      <text x="30" y="190" class="label" style="font-size: 16px;">• Polymorphic signatures</text>
+      <text x="30" y="215" class="label" style="font-size: 16px;">• Field-based property access</text>
+      <text x="30" y="240" class="label" style="font-size: 16px;">• Parent/child relationships</text>
+      <text x="30" y="265" class="label" style="font-size: 16px;">• Abstract object support</text>
+      <text x="30" y="290" class="label" style="font-size: 16px;">• ._ internal object</text>
+      
+      <rect x="20" y="305" width="480" height="60" rx="5" fill="#fff3cd" stroke="#ffc107" stroke-width="1"/>
+      <text x="260" y="330" text-anchor="middle" class="warning" style="font-size: 16px;">
+        Still used by main exports!
+      </text>
+      <text x="260" y="355" text-anchor="middle" class="comment" style="font-size: 14px;">
+        Breaking changes need migration
+      </text>
+    </g>
+    
+    <!-- Collection.js (old) -->
+    <g transform="translate(0, 420)">
+      <rect class="old-box" width="520" height="340" rx="8"/>
+      <rect class="file-icon" x="10" y="10" width="30" height="38" rx="3"/>
+      <text x="50" y="32" class="file-name" style="font-weight: bold;">Collection.js</text>
+      <text x="50" y="58" class="annotation" style="fill: #7f8c8d;">⚠️ Legacy Implementation</text>
+      
+      <text x="30" y="90" class="code" style="fill: #555;">class Collection extends DM</text>
+      
+      <line x1="20" y1="105" x2="500" y2="105" stroke="#95a5a6" stroke-width="1"/>
+      
+      <text x="30" y="135" class="label" style="font-size: 18px; fill: #555;">Features:</text>
+      <text x="30" y="165" class="label" style="font-size: 16px;">• Array-like with indexing</text>
+      <text x="30" y="190" class="label" style="font-size: 16px;">• Constraint matching</text>
+      <text x="30" y="215" class="label" style="font-size: 16px;">• Field-based querying</text>
+      <text x="30" y="240" class="label" style="font-size: 16px;">• Relationship tracking</text>
+      <text x="30" y="265" class="label" style="font-size: 16px;">• Complex indexing system</text>
+      
+      <rect x="20" y="280" width="480" height="45" rx="5" fill="#fff3cd" stroke="#ffc107" stroke-width="1"/>
+      <text x="260" y="310" text-anchor="middle" class="warning" style="font-size: 16px;">
+        Still in active use
+      </text>
+    </g>
+    
+    <!-- Data_Value.js (old) -->
+    <g transform="translate(0, 800)">
+      <rect class="old-box" width="520" height="200" rx="8"/>
+      <rect class="file-icon" x="10" y="10" width="30" height="38" rx="3"/>
+      <text x="50" y="32" class="file-name" style="font-weight: bold;">Data_Value.js</text>
+      <text x="50" y="58" class="annotation" style="fill: #7f8c8d;">❌ Not Currently Used</text>
+      
+      <line x1="20" y1="75" x2="500" y2="75" stroke="#95a5a6" stroke-width="1"/>
+      
+      <text x="260" y="115" text-anchor="middle" class="comment" style="font-size: 16px;">
+        Superseded by new/Data_Value.js
+      </text>
+      <text x="260" y="145" text-anchor="middle" class="comment" style="font-size: 16px;">
+        Kept for reference/backwards compatibility
+      </text>
+      <text x="260" y="175" text-anchor="middle" class="comment" style="font-size: 16px;">
+        May be safely removed after testing
+      </text>
+    </g>
+  </g>
+  
+  <!-- Arrows showing require relationships -->
+  
+  <!-- Data_Value wrapper to new -->
+  <path d="M 560 530 L 560 670 L 420 670 L 420 780" class="require-arrow"/>
+  <text x="470" y="665" class="annotation" style="fill: #e67e22;">require('./new/Data_Value')</text>
+  
+  <!-- Data_Object wrapper to old -->
+  <path d="M 1160 530 L 1160 670 L 2260 670 L 2260 780" class="require-arrow"/>
+  <text x="1700" y="665" class="annotation" style="fill: #e67e22;">require('./old/Data_Object')</text>
+  
+  <!-- Collection wrapper to old -->
+  <path d="M 1460 530 L 1460 700 L 2260 700 L 2260 1200" class="require-arrow"/>
+  <text x="1850" y="695" class="annotation" style="fill: #e67e22;">require('./old/Collection')</text>
+  
+  <!-- Key Insights Box -->
+  <g transform="translate(150, 1400)">
+    <rect width="2260" height="160" rx="10" fill="#e8f8f9" stroke="#16a085" stroke-width="3"/>
+    <text x="1130" y="40" text-anchor="middle" class="section-title" style="fill: #16a085;">🔑 Key Insights</text>
+    
+    <text x="50" y="80" class="label" style="font-size: 20px;">
+      1. Root wrapper files are <tspan style="font-weight: bold;">just one line</tspan> - they delegate to new/ or old/
+    </text>
+    <text x="50" y="110" class="label" style="font-size: 20px;">
+      2. Prefer <tspan style="font-weight: bold; fill: #27ae60;">new/</tspan> implementations for modern features (Data_Value, immutables)
+    </text>
+    <text x="50" y="140" class="label" style="font-size: 20px;">
+      3. <tspan style="font-weight: bold; fill: #95a5a6;">old/</tspan> implementations still power main exports - test thoroughly before changes
+    </text>
+  </g>
+  
+  <!-- Footer -->
+  <text x="1280" y="1600" text-anchor="middle" class="comment" style="font-size: 18px;">
+    This pattern allows gradual migration while maintaining backwards compatibility
+  </text>
+</svg>

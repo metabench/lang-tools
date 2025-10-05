@@ -136,16 +136,16 @@ var execute_on_each_simple = function(items, fn) {
 	// currently no arguments provided, there may be in the future / future
 	// versions
 	var res = [], that = this;
-	each(items, function(i, v) {
-		res.push(fn.call(that, v)); // function called with item as its only
-									// parameter.
+	each(items, function(i, v) {  // Note: for arrays, each() calls with (value, index)
+		res.push(fn.call(that, i)); // function called with item as its only
+									// parameter (i is the value, v is the index)
 	});
 	return res;
 };
 
 var filter_map_by_regex = function(map, regex) {
 	var res = {};
-	each(map, function(i, v) {
+	each(map, function(v, i) {  // Note: each() calls with (value, key) for objects
 		// if (regex.match(i)) {
 		if (i.match(regex)) {
 			res[i] = v;

@@ -1,0 +1,352 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2560 1600" style="background: #fafafa;">
+  <defs>
+    <style>
+      .title { font: bold 48px 'Segoe UI', Arial, sans-serif; fill: #1a1a1a; }
+      .subtitle { font: 32px 'Segoe UI', Arial, sans-serif; fill: #404040; }
+      .section-title { font: bold 28px 'Segoe UI', Arial, sans-serif; fill: #2c3e50; }
+      .code { font: 18px 'Consolas', monospace; fill: #0066cc; }
+      .comment { font: italic 16px 'Segoe UI', Arial, sans-serif; fill: #666666; }
+      .label { font: 20px 'Segoe UI', Arial, sans-serif; fill: #333333; }
+      .step-label { font: bold 22px 'Segoe UI', Arial, sans-serif; fill: #ffffff; }
+      .annotation { font: 18px 'Segoe UI', Arial, sans-serif; fill: #555555; }
+      
+      .dv-box { fill: #3498db; stroke: #2980b9; stroke-width: 3; }
+      .value-box { fill: #e8f4f8; stroke: #3498db; stroke-width: 2; }
+      .event-box { fill: #fff3cd; stroke: #ffc107; stroke-width: 2; }
+      .sync-box { fill: #d4edda; stroke: #28a745; stroke-width: 2; }
+      .immutable-box { fill: #e1d5e7; stroke: #8e44ad; stroke-width: 3; }
+      .validation-box { fill: #f8d7da; stroke: #dc3545; stroke-width: 2; }
+      
+      .flow-arrow { stroke: #2c3e50; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .data-flow { stroke: #3498db; stroke-width: 4; fill: none; marker-end: url(#data-arrow); }
+      .event-flow { stroke: #f39c12; stroke-width: 3; fill: none; marker-end: url(#event-arrow); stroke-dasharray: 8,4; }
+      .sync-flow { stroke: #28a745; stroke-width: 4; fill: none; marker-end: url(#sync-arrow); }
+      .bidirectional { stroke: #16a085; stroke-width: 4; fill: none; marker-start: url(#bi-arrow-start); marker-end: url(#bi-arrow-end); }
+      
+      .step-circle { fill: #e67e22; stroke: #d35400; stroke-width: 3; }
+    </style>
+    
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#2c3e50" />
+    </marker>
+    
+    <marker id="data-arrow" markerWidth="12" markerHeight="12" refX="11" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#3498db" />
+    </marker>
+    
+    <marker id="event-arrow" markerWidth="12" markerHeight="12" refX="11" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#f39c12" />
+    </marker>
+    
+    <marker id="sync-arrow" markerWidth="12" markerHeight="12" refX="11" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#28a745" />
+    </marker>
+    
+    <marker id="bi-arrow-start" markerWidth="12" markerHeight="12" refX="1" refY="4" orient="auto">
+      <polygon points="12 0, 0 4, 12 8" fill="#16a085" />
+    </marker>
+    
+    <marker id="bi-arrow-end" markerWidth="12" markerHeight="12" refX="11" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#16a085" />
+    </marker>
+  </defs>
+  
+  <!-- Title -->
+  <text x="1280" y="70" text-anchor="middle" class="title">Data Flow & Synchronization Architecture</text>
+  <text x="1280" y="115" text-anchor="middle" class="subtitle">Reactive Change Events, Validation, and Bidirectional Sync</text>
+  
+  <!-- Section 1: Basic Data Flow -->
+  <g transform="translate(80, 170)">
+    <text x="0" y="0" class="section-title">1. Basic Data_Value Change Flow</text>
+    
+    <!-- Step 1: Value Assignment -->
+    <g transform="translate(0, 50)">
+      <circle cx="30" cy="30" r="25" class="step-circle"/>
+      <text x="30" y="38" text-anchor="middle" class="step-label">1</text>
+      
+      <rect x="80" y="5" width="400" height="120" class="value-box" rx="8"/>
+      <text x="280" y="35" text-anchor="middle" class="label" style="font-weight: bold;">Value Assignment</text>
+      <rect x="100" y="50" width="360" height="60" rx="5" fill="#ffffff" stroke="#3498db" stroke-width="1"/>
+      <text x="110" y="75" class="code">dv.value = 5;</text>
+      <text x="110" y="100" class="comment">Triggers setter function</text>
+    </g>
+    
+    <!-- Arrow to step 2 -->
+    <path d="M 280 170 L 280 210" class="flow-arrow"/>
+    
+    <!-- Step 2: Equality Check -->
+    <g transform="translate(0, 210)">
+      <circle cx="30" cy="30" r="25" class="step-circle"/>
+      <text x="30" y="38" text-anchor="middle" class="step-label">2</text>
+      
+      <rect x="80" y="5" width="400" height="150" class="validation-box" rx="8"/>
+      <text x="280" y="35" text-anchor="middle" class="label" style="font-weight: bold;">Equality Check</text>
+      <rect x="100" y="50" width="360" height="90" rx="5" fill="#ffffff" stroke="#dc3545" stroke-width="1"/>
+      <text x="110" y="75" class="code">more_general_equals(old, new)</text>
+      <text x="110" y="100" class="comment">Returns early if values are equal</text>
+      <text x="110" y="125" class="comment" style="fill: #28a745; font-weight: bold;">✓ Prevents unnecessary events</text>
+    </g>
+    
+    <!-- Arrow to step 3 -->
+    <path d="M 280 360 L 280 400" class="flow-arrow"/>
+    <text x="320" y="385" class="annotation" style="fill: #28a745;">values differ</text>
+    
+    <!-- Step 3: Validation -->
+    <g transform="translate(0, 400)">
+      <circle cx="30" cy="30" r="25" class="step-circle"/>
+      <text x="30" y="38" text-anchor="middle" class="step-label">3</text>
+      
+      <rect x="80" y="5" width="400" height="180" class="validation-box" rx="8"/>
+      <text x="280" y="35" text-anchor="middle" class="label" style="font-weight: bold;">Validation (if data_type set)</text>
+      <rect x="100" y="50" width="360" height="120" rx="5" fill="#ffffff" stroke="#dc3545" stroke-width="1"/>
+      <text x="110" y="75" class="code">data_type.validate(value)</text>
+      <text x="110" y="105" class="comment">• String parsing: "5" → 5</text>
+      <text x="110" y="130" class="comment">• Type checking</text>
+      <text x="110" y="155" class="comment">• Range validation</text>
+    </g>
+    
+    <!-- Arrow to step 4 -->
+    <path d="M 280 580 L 280 620" class="flow-arrow"/>
+    <text x="320" y="605" class="annotation" style="fill: #28a745;">valid</text>
+    
+    <!-- Step 4: Update & Event -->
+    <g transform="translate(0, 620)">
+      <circle cx="30" cy="30" r="25" class="step-circle"/>
+      <text x="30" y="38" text-anchor="middle" class="step-label">4</text>
+      
+      <rect x="80" y="5" width="400" height="150" class="event-box" rx="8"/>
+      <text x="280" y="35" text-anchor="middle" class="label" style="font-weight: bold;">Update & Raise Event</text>
+      <rect x="100" y="50" width="360" height="90" rx="5" fill="#ffffff" stroke="#ffc107" stroke-width="1"/>
+      <text x="110" y="75" class="code">local_js_value = value;</text>
+      <text x="110" y="100" class="code">this.raise('change', e);</text>
+      <text x="110" y="125" class="comment">e = {name, old, value}</text>
+    </g>
+  </g>
+  
+  <!-- Section 2: Bidirectional Sync -->
+  <g transform="translate(600, 170)">
+    <text x="0" y="0" class="section-title">2. Bidirectional Synchronization</text>
+    
+    <!-- Two Data_Values -->
+    <g transform="translate(0, 50)">
+      <!-- DV1 (Integer) -->
+      <rect x="0" y="0" width="320" height="220" class="dv-box" rx="8"/>
+      <text x="160" y="35" text-anchor="middle" class="step-label" style="font-size: 22px;">Data_Value #1</text>
+      <text x="160" y="65" text-anchor="middle" class="annotation" style="fill: #ffffff;">Type: Integer</text>
+      
+      <rect x="20" y="80" width="280" height="120" class="value-box" rx="5"/>
+      <text x="30" y="105" class="code">value: 3</text>
+      <text x="30" y="130" class="code">data_type: FDT.integer</text>
+      
+      <text x="30" y="165" class="comment" style="font-size: 14px;">on('change', handler)</text>
+      <text x="30" y="185" class="comment" style="font-size: 14px;">validates: integer range</text>
+      
+      <!-- DV2 (String) -->
+      <rect x="460" y="0" width="320" height="220" class="dv-box" rx="8"/>
+      <text x="620" y="35" text-anchor="middle" class="step-label" style="font-size: 22px;">Data_Value #2</text>
+      <text x="620" y="65" text-anchor="middle" class="annotation" style="fill: #ffffff;">Type: String</text>
+      
+      <rect x="480" y="80" width="280" height="120" class="value-box" rx="5"/>
+      <text x="490" y="105" class="code">value: "3"</text>
+      <text x="490" y="130" class="code">data_type: String</text>
+      
+      <text x="490" y="165" class="comment" style="font-size: 14px;">on('change', handler)</text>
+      <text x="490" y="185" class="comment" style="font-size: 14px;">auto-converts from number</text>
+      
+      <!-- Sync setup -->
+      <rect x="140" y="240" width="480" height="80" class="sync-box" rx="8"/>
+      <text x="380" y="270" text-anchor="middle" class="label" style="font-weight: bold;">Data_Value.sync(dv1, dv2)</text>
+      <text x="380" y="300" text-anchor="middle" class="comment">Sets up bidirectional event listeners</text>
+      
+      <!-- Bidirectional arrow -->
+      <path d="M 160 220 L 160 350 L 380 350 M 620 220 L 620 350 L 380 350" class="bidirectional"/>
+    </g>
+    
+    <!-- Sync Flow Example -->
+    <g transform="translate(0, 380)">
+      <rect x="0" y="0" width="780" height="420" rx="10" fill="#f0f8ff" stroke="#4682b4" stroke-width="2"/>
+      <text x="390" y="35" text-anchor="middle" class="section-title" style="font-size: 24px;">Sync Flow Example</text>
+      
+      <!-- Step A -->
+      <g transform="translate(20, 60)">
+        <rect x="0" y="0" width="360" height="100" class="event-box" rx="5"/>
+        <text x="180" y="25" text-anchor="middle" class="label" style="font-weight: bold;">User sets dv1.value = 5</text>
+        <text x="20" y="55" class="code">dv1.value = 5;</text>
+        <text x="20" y="80" class="comment">Integer Data_Value updated</text>
+      </g>
+      
+      <path d="M 200 160 L 200 190" class="event-flow"/>
+      
+      <!-- Step B -->
+      <g transform="translate(20, 190)">
+        <rect x="0" y="0" width="360" height="100" class="event-box" rx="5"/>
+        <text x="180" y="25" text-anchor="middle" class="label" style="font-weight: bold;">DV1 raises 'change' event</text>
+        <text x="20" y="55" class="code">e = {name: 'value', old: 3,</text>
+        <text x="20" y="80" class="code">     value: 5}</text>
+      </g>
+      
+      <path d="M 200 290 L 560 290 L 560 330" class="sync-flow"/>
+      <text x="380" y="280" class="annotation" style="fill: #28a745;">sync listener</text>
+      
+      <!-- Step C -->
+      <g transform="translate(400, 330)">
+        <rect x="0" y="0" width="360" height="100" class="event-box" rx="5"/>
+        <text x="180" y="25" text-anchor="middle" class="label" style="font-weight: bold;">DV2 receives update</text>
+        <text x="20" y="55" class="code">dv2.value = 5; // auto-converts</text>
+        <text x="20" y="80" class="comment">Becomes: "5" (string)</text>
+      </g>
+      
+      <!-- Step D -->
+      <g transform="translate(20, 330)">
+        <rect x="0" y="0" width="360" height="90" class="sync-box" rx="5"/>
+        <text x="180" y="25" text-anchor="middle" class="label" style="font-weight: bold;">Result</text>
+        <text x="20" y="55" class="code" style="fill: #28a745;">dv1.value === 5 (number)</text>
+        <text x="20" y="80" class="code" style="fill: #28a745;">dv2.value === "5" (string)</text>
+      </g>
+      
+      <path d="M 560 430 L 560 460 L 200 460 L 200 420" class="bidirectional"/>
+      <text x="380" y="475" class="annotation" style="fill: #16a085;">Works in both directions!</text>
+    </g>
+  </g>
+  
+  <!-- Section 3: Immutability Flow -->
+  <g transform="translate(1480, 170)">
+    <text x="0" y="0" class="section-title">3. Immutable Snapshots</text>
+    
+    <g transform="translate(0, 50)">
+      <!-- Mutable DV -->
+      <rect x="0" y="0" width="380" height="280" class="dv-box" rx="8"/>
+      <text x="190" y="35" text-anchor="middle" class="step-label" style="font-size: 22px;">Mutable Data_Value</text>
+      
+      <rect x="20" y="55" width="340" height="200" class="value-box" rx="5"/>
+      <text x="30" y="80" class="code">value: [7, 8]</text>
+      <text x="30" y="105" class="code">data_type: fdt_lat_long</text>
+      
+      <line x1="30" y1="120" x2="350" y2="120" stroke="#3498db" stroke-width="1"/>
+      
+      <text x="30" y="145" class="comment">✓ Can be modified</text>
+      <text x="30" y="170" class="comment">✓ Raises change events</text>
+      <text x="30" y="195" class="comment">✓ Inner items are mutable DVs</text>
+      <text x="30" y="220" class="comment">✓ Good for active editing</text>
+      
+      <!-- toImmutable call -->
+      <rect x="50" y="300" width="280" height="60" class="event-box" rx="5"/>
+      <text x="190" y="330" text-anchor="middle" class="code">const imm = dv.toImmutable();</text>
+      
+      <path d="M 190 360 L 190 420" class="flow-arrow"/>
+      
+      <!-- Immutable DV -->
+      <rect x="0" y="420" width="380" height="300" class="immutable-box" rx="8"/>
+      <text x="190" y="455" text-anchor="middle" class="step-label" style="font-size: 22px;">Immutable_Data_Value</text>
+      
+      <rect x="20" y="475" width="340" height="225" rx="5" fill="#f4e8f7" stroke="#8e44ad" stroke-width="2"/>
+      <text x="30" y="500" class="code" style="fill: #8e44ad;">value: [7, 8] (frozen)</text>
+      <text x="30" y="525" class="code" style="fill: #8e44ad;">data_type: fdt_lat_long</text>
+      <text x="30" y="550" class="code" style="fill: #8e44ad;">__immutable: true</text>
+      
+      <line x1="30" y1="565" x2="350" y2="565" stroke="#8e44ad" stroke-width="1"/>
+      
+      <text x="30" y="590" class="comment" style="fill: #6c3483;">🔒 Cannot be modified</text>
+      <text x="30" y="615" class="comment" style="fill: #6c3483;">🔒 No change events</text>
+      <text x="30" y="640" class="comment" style="fill: #6c3483;">🔒 Inner items also immutable</text>
+      <text x="30" y="665" class="comment" style="fill: #6c3483;">🔒 Safe for state snapshots</text>
+      <text x="30" y="690" class="comment" style="fill: #6c3483;">🔒 Deep copy on creation</text>
+    </g>
+    
+    <!-- Use cases -->
+    <g transform="translate(0, 770)">
+      <rect x="0" y="0" width="380" height="180" rx="8" fill="#e8f9f9" stroke="#17a2b8" stroke-width="2"/>
+      <text x="190" y="30" text-anchor="middle" class="label" style="font-weight: bold;">Use Cases</text>
+      
+      <text x="20" y="60" class="label" style="font-size: 16px;">• State history/undo systems</text>
+      <text x="20" y="85" class="label" style="font-size: 16px;">• Passing to external code</text>
+      <text x="20" y="110" class="label" style="font-size: 16px;">• Comparison snapshots</text>
+      <text x="20" y="135" class="label" style="font-size: 16px;">• Thread-safe data sharing</text>
+      <text x="20" y="160" class="label" style="font-size: 16px;">• Debugging/logging</text>
+    </g>
+  </g>
+  
+  <!-- Section 4: Type Conversion in Sync -->
+  <g transform="translate(1960, 170)">
+    <text x="0" y="0" class="section-title">4. Type Conversion</text>
+    
+    <g transform="translate(0, 50)">
+      <rect x="0" y="0" width="520" height="620" rx="10" fill="#fff8e1" stroke="#ff9800" stroke-width="3"/>
+      <text x="260" y="40" text-anchor="middle" class="section-title" style="font-size: 24px;">Automatic Type Coercion</text>
+      
+      <!-- Example 1 -->
+      <g transform="translate(20, 70)">
+        <text x="0" y="0" class="label" style="font-weight: bold;">Number → String</text>
+        <rect x="0" y="10" width="480" height="100" class="value-box" rx="5"/>
+        <text x="10" y="35" class="code">dv_int.value = 5; // integer type</text>
+        <text x="10" y="60" class="comment">↓ sync triggers</text>
+        <text x="10" y="85" class="code" style="fill: #28a745;">dv_str.value = "5"; // auto-converts</text>
+      </g>
+      
+      <!-- Example 2 -->
+      <g transform="translate(20, 190)">
+        <text x="0" y="0" class="label" style="font-weight: bold;">String → Number (with parsing)</text>
+        <rect x="0" y="10" width="480" height="100" class="value-box" rx="5"/>
+        <text x="10" y="35" class="code">dv_str.value = "42"; // string type</text>
+        <text x="10" y="60" class="comment">↓ parse_string() called</text>
+        <text x="10" y="85" class="code" style="fill: #28a745;">dv_num.value = 42; // parsed</text>
+      </g>
+      
+      <!-- Example 3 -->
+      <g transform="translate(20, 310)">
+        <text x="0" y="0" class="label" style="font-weight: bold;">Validation Failure</text>
+        <rect x="0" y="10" width="480" height="120" class="validation-box" rx="5"/>
+        <text x="10" y="35" class="code">dv_int.value = "invalid";</text>
+        <text x="10" y="60" class="comment">↓ validation fails</text>
+        <text x="10" y="85" class="code" style="fill: #dc3545;">// Value NOT updated</text>
+        <text x="10" y="110" class="code" style="fill: #dc3545;">// 'validate' event raised</text>
+      </g>
+      
+      <!-- Key Points -->
+      <g transform="translate(20, 450)">
+        <text x="0" y="0" class="label" style="font-weight: bold;">Key Points:</text>
+        <text x="0" y="30" class="annotation">• Each DV maintains its own type</text>
+        <text x="0" y="55" class="annotation">• Conversion happens during sync</text>
+        <text x="0" y="80" class="annotation">• Uses parse_string() when needed</text>
+        <text x="0" y="105" class="annotation">• Validation runs on each side</text>
+        <text x="0" y="130" class="annotation">• Failed validation prevents update</text>
+      </g>
+    </g>
+    
+    <!-- Context Requirement -->
+    <g transform="translate(0, 710)">
+      <rect x="0" y="0" width="520" height="180" rx="8" fill="#fff3cd" stroke="#ffc107" stroke-width="3"/>
+      <text x="260" y="35" text-anchor="middle" class="label" style="font-weight: bold; font-size: 22px;">⚠️ Context Requirement</text>
+      
+      <rect x="20" y="55" width="480" height="100" rx="5" fill="#fffbf0" stroke="#f39c12" stroke-width="1"/>
+      <text x="30" y="80" class="code" style="fill: #e67e22;">const dv = new Data_Value({</text>
+      <text x="30" y="105" class="code" style="fill: #e67e22;">  value: 10,</text>
+      <text x="30" y="130" class="code" style="fill: #e67e22; font-weight: bold;">  context: myContext // REQUIRED</text>
+      <text x="30" y="155" class="code" style="fill: #e67e22;">});</text>
+    </g>
+  </g>
+  
+  <!-- Footer with key takeaways -->
+  <g transform="translate(80, 1450)">
+    <rect width="2400" height="120" rx="10" fill="#e8f5e9" stroke="#4caf50" stroke-width="3"/>
+    <text x="1200" y="40" text-anchor="middle" class="section-title" style="fill: #2e7d32;">💡 Key Takeaways</text>
+    
+    <text x="50" y="75" class="label" style="font-size: 18px;">
+      1. Change events only fire when values actually differ (via more_general_equals)
+    </text>
+    <text x="50" y="105" class="label" style="font-size: 18px;">
+      2. Data_Value.sync() enables bidirectional synchronization with automatic type conversion
+    </text>
+    <text x="1250" y="75" class="label" style="font-size: 18px;">
+      3. .toImmutable() creates deep-frozen snapshots for safe state management
+    </text>
+    <text x="1250" y="105" class="label" style="font-size: 18px;">
+      4. Validation and parsing happen transparently during value assignment
+    </text>
+  </g>
+  
+  <!-- Footer -->
+  <text x="1280" y="1600" text-anchor="middle" class="comment" style="font-size: 18px;">
+    Reactive data flow enables MVC binding, undo systems, and real-time UI updates
+  </text>
+</svg>

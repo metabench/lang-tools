@@ -28,11 +28,11 @@ class Data_Model extends Evented_Class {
     constructor(spec = {}) {
         super(spec);
         this.__data_model = true;
-        if (spec.context) {
+        if (spec && spec.context) {
             this.context = spec.context;
 
         }
-        if (spec.name) {
+        if (spec && spec.name) {
             this.name = spec.name;
         }
         this.__type = 'data_model';

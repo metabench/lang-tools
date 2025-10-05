@@ -184,6 +184,8 @@ class Data_Value extends Base_Data_Value {
         
         const attempt_set_value = this.attempt_set_value = (value) => {
             const get_local_js_value_copy = () => {
+                // TODO <BUG001>: local_js_value is not defined - should this be 'value' or 'this._'?
+                // See BUGS.md for details and proposed fixes
                 const tljsv = tof(local_js_value);
                 if (tljsv === 'undefined' || tljsv === 'string' || tljsv === 'number') {
                     return local_js_value;

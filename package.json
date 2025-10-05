@@ -4,11 +4,17 @@
     "license": "MIT",
     "dependencies": {
         "fnl": "^0.0.36",
-        "lang-mini": "0.0.39"
+        "lang-mini": "0.0.40"
+    },
+    "devDependencies": {
+        "jest": "^29.7.0"
     },
     "scripts": {
         "start": "node ./lang",
-        "test": "node test/test-all.js"
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage",
+        "test:legacy": "node test/test-all.js"
     },
     "comments": [
         "Should possibly have the more comprehensive lang tools for plugging into jsgui and doing advanced coding."
@@ -22,5 +28,5 @@
         "type": "git",
         "url": "https://github.com/metabench/lang-tools.git"
     },
-    "version": "0.0.36"
+    "version": "0.0.37"
 }

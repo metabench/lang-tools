@@ -1,0 +1,349 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2560 1600" style="background: #ffffff;">
+  <defs>
+    <style>
+      .title { font: bold 48px 'Segoe UI', Arial, sans-serif; fill: #1a1a1a; }
+      .subtitle { font: 32px 'Segoe UI', Arial, sans-serif; fill: #404040; }
+      .class-name { font: bold 24px 'Segoe UI', Arial, sans-serif; fill: #ffffff; }
+      .property { font: 18px 'Consolas', monospace; fill: #2d2d2d; }
+      .method { font: 18px 'Consolas', monospace; fill: #0066cc; }
+      .comment { font: italic 16px 'Segoe UI', Arial, sans-serif; fill: #666666; }
+      .label { font: 20px 'Segoe UI', Arial, sans-serif; fill: #333333; }
+      .annotation { font: italic 18px 'Segoe UI', Arial, sans-serif; fill: #888888; }
+      
+      .base-class { fill: #2c3e50; stroke: #1a252f; stroke-width: 3; }
+      .abstract-class { fill: #34495e; stroke: #2c3e50; stroke-width: 3; }
+      .concrete-class { fill: #3498db; stroke: #2980b9; stroke-width: 3; }
+      .legacy-class { fill: #95a5a6; stroke: #7f8c8d; stroke-width: 3; }
+      .new-class { fill: #27ae60; stroke: #229954; stroke-width: 3; }
+      .immutable-class { fill: #8e44ad; stroke: #7d3c98; stroke-width: 3; }
+      .utility-class { fill: #e67e22; stroke: #d35400; stroke-width: 3; }
+      
+      .inheritance-arrow { stroke: #2c3e50; stroke-width: 4; fill: none; marker-end: url(#arrowhead); }
+      .composition-arrow { stroke: #16a085; stroke-width: 3; fill: none; marker-end: url(#diamond); stroke-dasharray: 8,4; }
+      .reference-arrow { stroke: #95a5a6; stroke-width: 2; fill: none; marker-end: url(#ref-arrow); stroke-dasharray: 4,4; }
+      
+      .section-box { fill: none; stroke: #bdc3c7; stroke-width: 2; stroke-dasharray: 10,5; }
+      .highlight-box { fill: #fff3cd; fill-opacity: 0.3; stroke: #ffc107; stroke-width: 2; }
+    </style>
+    
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#2c3e50" />
+    </marker>
+    
+    <marker id="diamond" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <polygon points="0 6, 6 0, 12 6, 6 12" fill="#16a085" />
+    </marker>
+    
+    <marker id="ref-arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#95a5a6" />
+    </marker>
+  </defs>
+  
+  <!-- Title -->
+  <text x="1280" y="60" text-anchor="middle" class="title">lang-tools Data Model Class Hierarchy</text>
+  <text x="1280" y="105" text-anchor="middle" class="subtitle">Reactive Event-Driven Data Structures</text>
+  
+  <!-- Legend -->
+  <g transform="translate(80, 140)">
+    <text x="0" y="0" class="label" style="font-weight: bold;">Legend:</text>
+    <rect x="0" y="15" width="140" height="35" class="base-class" rx="5"/>
+    <text x="70" y="38" text-anchor="middle" class="class-name" style="font-size: 16px;">Base Class</text>
+    
+    <rect x="160" y="15" width="140" height="35" class="new-class" rx="5"/>
+    <text x="230" y="38" text-anchor="middle" class="class-name" style="font-size: 16px;">New API</text>
+    
+    <rect x="320" y="15" width="140" height="35" class="legacy-class" rx="5"/>
+    <text x="390" y="38" text-anchor="middle" class="class-name" style="font-size: 16px;">Legacy (old/)</text>
+    
+    <rect x="480" y="15" width="140" height="35" class="immutable-class" rx="5"/>
+    <text x="550" y="38" text-anchor="middle" class="class-name" style="font-size: 16px;">Immutable</text>
+    
+    <rect x="640" y="15" width="140" height="35" class="utility-class" rx="5"/>
+    <text x="710" y="38" text-anchor="middle" class="class-name" style="font-size: 16px;">Utility</text>
+  </g>
+  
+  <!-- lang-mini Base (External Dependency) -->
+  <g transform="translate(1050, 220)">
+    <rect width="460" height="180" class="base-class" rx="8"/>
+    <text x="230" y="40" text-anchor="middle" class="class-name" style="font-size: 28px;">Evented_Class</text>
+    <text x="230" y="70" text-anchor="middle" class="annotation">(from lang-mini)</text>
+    <line x1="20" y1="85" x2="440" y2="85" stroke="#ffffff" stroke-width="2"/>
+    
+    <text x="30" y="115" class="property" style="fill: #ecf0f1;">+ _bound_events: Object</text>
+    <text x="30" y="140" class="property" style="fill: #ecf0f1;">+ _relationships: Object</text>
+    
+    <line x1="20" y1="155" x2="440" y2="155" stroke="#ffffff" stroke-width="1" opacity="0.5"/>
+    
+    <text x="30" y="180" class="method" style="fill: #3498db;">+ on(event, handler)</text>
+    <text x="30" y="205" class="method" style="fill: #3498db;">+ raise(event, data)</text>
+    <text x="30" y="230" class="method" style="fill: #3498db;">+ trigger(event, data)</text>
+  </g>
+  
+  <!-- Inheritance arrow from Evented_Class -->
+  <path d="M 1280 400 L 1280 480" class="inheritance-arrow"/>
+  
+  <!-- Data_Model (Abstract Base) -->
+  <g transform="translate(1020, 480)">
+    <rect width="520" height="200" class="abstract-class" rx="8"/>
+    <text x="260" y="40" text-anchor="middle" class="class-name" style="font-size: 28px;">Data_Model</text>
+    <text x="260" y="70" text-anchor="middle" class="annotation">(Data_Model/Data_Model.js)</text>
+    <line x1="20" y1="85" x2="500" y2="85" stroke="#ffffff" stroke-width="2"/>
+    
+    <text x="30" y="115" class="property" style="fill: #ecf0f1;">+ __data_model: true</text>
+    <text x="30" y="140" class="property" style="fill: #ecf0f1;">+ __type: 'data_model'</text>
+    <text x="30" y="165" class="property" style="fill: #ecf0f1;">+ context: Mini_Context</text>
+    <text x="30" y="190" class="property" style="fill: #ecf0f1;">+ name: string</text>
+  </g>
+  
+  <!-- Inheritance branches from Data_Model -->
+  <path d="M 1280 680 L 1280 750 M 600 750 L 1960 750" class="inheritance-arrow"/>
+  <path d="M 350 750 L 350 820" class="inheritance-arrow"/>
+  <path d="M 900 750 L 900 820" class="inheritance-arrow"/>
+  <path d="M 1280 750 L 1280 820" class="inheritance-arrow"/>
+  <path d="M 1660 750 L 1660 820" class="inheritance-arrow"/>
+  <path d="M 2010 750 L 2010 820" class="inheritance-arrow"/>
+  
+  <!-- Data_Object (Legacy - old/) -->
+  <g transform="translate(80, 820)">
+    <rect width="540" height="380" class="legacy-class" rx="8"/>
+    <text x="270" y="40" text-anchor="middle" class="class-name" style="font-size: 26px;">Data_Object (Legacy)</text>
+    <text x="270" y="70" text-anchor="middle" class="annotation">(Data_Model/old/Data_Object.js)</text>
+    <line x1="20" y1="85" x2="520" y2="85" stroke="#ffffff" stroke-width="2"/>
+    
+    <text x="30" y="115" class="property" style="fill: #2d2d2d;">+ __data_object: true</text>
+    <text x="30" y="140" class="property" style="fill: #2d2d2d;">+ __type_name: string</text>
+    <text x="30" y="165" class="property" style="fill: #2d2d2d;">+ _parent: Data_Object</text>
+    <text x="30" y="190" class="property" style="fill: #2d2d2d;">+ _parents: Object</text>
+    <text x="30" y="215" class="property" style="fill: #2d2d2d;">+ _abstract: boolean</text>
+    
+    <line x1="20" y1="230" x2="520" y2="230" stroke="#2d2d2d" stroke-width="1" opacity="0.3"/>
+    
+    <text x="30" y="260" class="method">+ get(key): any</text>
+    <text x="30" y="285" class="method">+ set(key, value): void</text>
+    <text x="30" y="310" class="method">+ has(key): boolean</text>
+    <text x="30" y="335" class="method">+ each(callback): void</text>
+    <text x="30" y="360" class="method">+ toJSON(): string</text>
+    <text x="30" y="385" class="method">+ _id(): string</text>
+    
+    <text x="270" y="415" text-anchor="middle" class="comment">Complex .get()/.set() polymorphism</text>
+    <text x="270" y="440" text-anchor="middle" class="comment">Field-based property access</text>
+  </g>
+  
+  <!-- Collection (Legacy - old/) -->
+  <g transform="translate(670, 820)">
+    <rect width="460" height="380" class="legacy-class" rx="8"/>
+    <text x="230" y="40" text-anchor="middle" class="class-name" style="font-size: 26px;">Collection</text>
+    <text x="230" y="70" text-anchor="middle" class="annotation">(Data_Model/old/Collection.js)</text>
+    <line x1="20" y1="85" x2="440" y2="85" stroke="#ffffff" stroke-width="2"/>
+    
+    <text x="30" y="115" class="property" style="fill: #2d2d2d;">+ _arr: Array</text>
+    <text x="30" y="140" class="property" style="fill: #2d2d2d;">+ length: number</text>
+    <text x="30" y="165" class="property" style="fill: #2d2d2d;">+ _indexes: Object</text>
+    <text x="30" y="190" class="property" style="fill: #2d2d2d;">+ _constraints: Array</text>
+    
+    <line x1="20" y1="205" x2="440" y2="205" stroke="#2d2d2d" stroke-width="1" opacity="0.3"/>
+    
+    <text x="30" y="235" class="method">+ push(item): number</text>
+    <text x="30" y="260" class="method">+ pop(): any</text>
+    <text x="30" y="285" class="method">+ each(callback): void</text>
+    <text x="30" y="310" class="method">+ filter(fn): Collection</text>
+    <text x="30" y="335" class="method">+ map(fn): Array</text>
+    <text x="30" y="360" class="method">+ remove(index): void</text>
+    
+    <text x="230" y="395" text-anchor="middle" class="comment">Array-like with indexing</text>
+    <text x="230" y="420" text-anchor="middle" class="comment">Constraint matching</text>
+  </g>
+  
+  <!-- Base_Data_Value (New) -->
+  <g transform="translate(1010, 820)">
+    <rect width="540" height="280" class="new-class" rx="8"/>
+    <text x="270" y="40" text-anchor="middle" class="class-name" style="font-size: 26px;">Base_Data_Value</text>
+    <text x="270" y="70" text-anchor="middle" class="annotation">(Data_Model/new/Base_Data_Value.js)</text>
+    <line x1="20" y1="85" x2="520" y2="85" stroke="#ffffff" stroke-width="2"/>
+    
+    <text x="30" y="115" class="property" style="fill: #ffffff;">+ __data_value: true</text>
+    <text x="30" y="140" class="property" style="fill: #ffffff;">+ __type_name: string</text>
+    <text x="30" y="165" class="property" style="fill: #ffffff;">+ data_type: Data_Type</text>
+    <text x="30" y="190" class="property" style="fill: #ffffff;">+ value: any (property)</text>
+    
+    <line x1="20" y1="205" x2="520" y2="205" stroke="#ffffff" stroke-width="1" opacity="0.5"/>
+    
+    <text x="30" y="235" class="method" style="fill: #e8f8f5;">+ get(): any</text>
+    <text x="30" y="260" class="method" style="fill: #e8f8f5;">+ set(value): void</text>
+    <text x="30" y="285" class="method" style="fill: #e8f8f5;">+ equals(other): boolean</text>
+  </g>
+  
+  <!-- Data_Value (New) -->
+  <g transform="translate(1010, 1150)">
+    <rect width="540" height="380" class="new-class" rx="8"/>
+    <text x="270" y="40" text-anchor="middle" class="class-name" style="font-size: 26px;">Data_Value</text>
+    <text x="270" y="70" text-anchor="middle" class="annotation">(Data_Model/new/Data_Value.js)</text>
+    <line x1="20" y1="85" x2="520" y2="85" stroke="#ffffff" stroke-width="2"/>
+    
+    <text x="30" y="115" class="property" style="fill: #ffffff;">+ attempt_set_value: function</text>
+    <text x="30" y="140" class="property" style="fill: #ffffff;">+ _relationships: Object</text>
+    
+    <line x1="20" y1="155" x2="520" y2="155" stroke="#ffffff" stroke-width="1" opacity="0.5"/>
+    
+    <text x="30" y="185" class="method" style="fill: #e8f8f5;">+ toImmutable(): Immutable_DV</text>
+    <text x="30" y="210" class="method" style="fill: #e8f8f5;">+ toObject(): Object</text>
+    <text x="30" y="235" class="method" style="fill: #e8f8f5;">+ toString(): string</text>
+    <text x="30" y="260" class="method" style="fill: #e8f8f5;">+ toJSON(): string</text>
+    <text x="30" y="285" class="method" style="fill: #e8f8f5;">+ clone(): Data_Value</text>
+    <text x="30" y="310" class="method" style="fill: #e8f8f5;">+ _id(): string</text>
+    
+    <line x1="20" y1="325" x2="520" y2="325" stroke="#ffffff" stroke-width="1" opacity="0.5"/>
+    
+    <text x="270" y="355" text-anchor="middle" class="comment" style="fill: #d5f4e6;">✓ Type validation via Functional_Data_Type</text>
+    <text x="270" y="380" text-anchor="middle" class="comment" style="fill: #d5f4e6;">✓ String parsing (e.g., "5" → 5)</text>
+    <text x="270" y="405" text-anchor="middle" class="comment" style="fill: #d5f4e6;">✓ Change events (uses more_general_equals)</text>
+  </g>
+  
+  <text x="1280" y="1570" text-anchor="middle" class="label" style="font-weight: bold; fill: #27ae60;">Data_Value.sync(dv1, dv2) - Bidirectional syncing with type conversion</text>
+  
+  <!-- Inheritance arrow from Base_Data_Value to Data_Value -->
+  <path d="M 1280 1100 L 1280 1150" class="inheritance-arrow"/>
+  
+  <!-- Immutable_Base_Data_Value -->
+  <g transform="translate(1600, 820)">
+    <rect width="560" height="280" class="immutable-class" rx="8"/>
+    <text x="280" y="40" text-anchor="middle" class="class-name" style="font-size: 26px;">Immutable_Base_Data_Value</text>
+    <text x="280" y="70" text-anchor="middle" class="annotation">(Data_Model/new/Immutable_Base_DV.js)</text>
+    <line x1="20" y1="85" x2="540" y2="85" stroke="#ffffff" stroke-width="2"/>
+    
+    <text x="30" y="115" class="property" style="fill: #ffffff;">+ __immutable: true</text>
+    <text x="30" y="140" class="property" style="fill: #ffffff;">+ value: any (read-only)</text>
+    
+    <line x1="20" y1="155" x2="540" y2="155" stroke="#ffffff" stroke-width="1" opacity="0.5"/>
+    
+    <text x="30" y="185" class="method" style="fill: #e8c1f5;">+ get(): any</text>
+    <text x="30" y="210" class="method" style="fill: #e8c1f5;">+ equals(other): boolean</text>
+    <text x="30" y="235" class="method" style="fill: #e8c1f5;">+ toImmutable(): this</text>
+    
+    <text x="280" y="270" text-anchor="middle" class="comment" style="fill: #f4e8f7;">🔒 Deep immutability for snapshots</text>
+  </g>
+  
+  <!-- Immutable_Data_Value -->
+  <g transform="translate(1600, 1150)">
+    <rect width="560" height="320" class="immutable-class" rx="8"/>
+    <text x="280" y="40" text-anchor="middle" class="class-name" style="font-size: 26px;">Immutable_Data_Value</text>
+    <text x="280" y="70" text-anchor="middle" class="annotation">(Data_Model/new/Immutable_Data_Value.js)</text>
+    <line x1="20" y1="85" x2="540" y2="85" stroke="#ffffff" stroke-width="2"/>
+    
+    <text x="30" y="115" class="property" style="fill: #ffffff;">+ data_type: Data_Type</text>
+    
+    <line x1="20" y1="130" x2="540" y2="130" stroke="#ffffff" stroke-width="1" opacity="0.5"/>
+    
+    <text x="30" y="160" class="method" style="fill: #e8c1f5;">+ toString(): string</text>
+    <text x="30" y="185" class="method" style="fill: #e8c1f5;">+ toJSON(): string</text>
+    <text x="30" y="210" class="method" style="fill: #e8c1f5;">+ clone(): Immutable_DV</text>
+    <text x="30" y="235" class="method" style="fill: #e8c1f5;">+ _id(): string</text>
+    <text x="30" y="260" class="method" style="fill: #e8c1f5;">+ toObject(): Object</text>
+    
+    <text x="280" y="295" text-anchor="middle" class="comment" style="fill: #f4e8f7;">🔒 Array items auto-immutablized</text>
+    <text x="280" y="320" text-anchor="middle" class="comment" style="fill: #f4e8f7;">🔒 Safe for state passing</text>
+  </g>
+  
+  <!-- Inheritance arrow from Immutable_Base to Immutable_Data_Value -->
+  <path d="M 1880 1100 L 1880 1150" class="inheritance-arrow"/>
+  
+  <!-- Immutable_Data_Model -->
+  <g transform="translate(2200, 820)">
+    <rect width="440" height="240" class="immutable-class" rx="8"/>
+    <text x="220" y="40" text-anchor="middle" class="class-name" style="font-size: 26px;">Immutable_Data_Model</text>
+    <text x="220" y="70" text-anchor="middle" class="annotation">(Data_Model/new/Immutable_DM.js)</text>
+    <line x1="20" y1="85" x2="420" y2="85" stroke="#ffffff" stroke-width="2"/>
+    
+    <text x="30" y="115" class="property" style="fill: #ffffff;">+ __immutable: true</text>
+    
+    <line x1="20" y1="130" x2="420" y2="130" stroke="#ffffff" stroke-width="1" opacity="0.5"/>
+    
+    <text x="30" y="160" class="method" style="fill: #e8c1f5;">+ toImmutable(): this</text>
+    
+    <text x="220" y="200" text-anchor="middle" class="comment" style="fill: #f4e8f7;">🔒 Base for all immutable</text>
+    <text x="220" y="225" text-anchor="middle" class="comment" style="fill: #f4e8f7;">data model classes</text>
+  </g>
+  
+  <!-- Supporting Utilities Section -->
+  <g transform="translate(80, 1280)">
+    <rect width="860" height="300" class="utility-class" rx="8"/>
+    <text x="430" y="40" text-anchor="middle" class="class-name" style="font-size: 26px;">Supporting Data Structures</text>
+    <line x1="20" y1="60" x2="840" y2="60" stroke="#ffffff" stroke-width="2"/>
+    
+    <g transform="translate(30, 80)">
+      <text x="0" y="25" class="label" style="fill: #ffffff; font-weight: bold;">B_Plus_Tree</text>
+      <text x="0" y="50" class="comment" style="fill: #fef5e7;">Self-balancing tree for sorted data</text>
+      <text x="0" y="70" class="property" style="fill: #fef5e7; font-size: 16px;">• insert(key, value)</text>
+      <text x="0" y="90" class="property" style="fill: #fef5e7; font-size: 16px;">• search(key)</text>
+      <text x="0" y="110" class="property" style="fill: #fef5e7; font-size: 16px;">• remove(key)</text>
+    </g>
+    
+    <g transform="translate(30, 210)">
+      <text x="0" y="25" class="label" style="fill: #ffffff; font-weight: bold;">Doubly_Linked_List</text>
+      <text x="0" y="50" class="comment" style="fill: #fef5e7;">Bidirectional linked list</text>
+    </g>
+    
+    <g transform="translate(450, 80)">
+      <text x="0" y="25" class="label" style="fill: #ffffff; font-weight: bold;">Ordered_KVS</text>
+      <text x="0" y="50" class="comment" style="fill: #fef5e7;">Key-Value Store (insertion order)</text>
+    </g>
+    
+    <g transform="translate(450, 160)">
+      <text x="0" y="25" class="label" style="fill: #ffffff; font-weight: bold;">Sorted_KVS</text>
+      <text x="0" y="50" class="comment" style="fill: #fef5e7;">Key-Value Store (sorted keys)</text>
+    </g>
+    
+    <g transform="translate(30, 270)">
+      <text x="0" y="0" class="label" style="fill: #ffffff; font-weight: bold;">collective.js</text>
+      <text x="0" y="25" class="comment" style="fill: #fef5e7;">Proxy-based batch operations: collective(arr).method()</text>
+    </g>
+  </g>
+  
+  <!-- Mini_Context (Supporting) -->
+  <g transform="translate(220, 1000)">
+    <rect width="380" height="220" class="utility-class" rx="8" opacity="0.9"/>
+    <text x="190" y="35" text-anchor="middle" class="class-name" style="font-size: 22px;">Mini_Context</text>
+    <text x="190" y="60" text-anchor="middle" class="annotation">(Data_Model/Mini_Context.js)</text>
+    <line x1="15" y1="72" x2="365" y2="72" stroke="#ffffff" stroke-width="2"/>
+    
+    <text x="25" y="100" class="property" style="fill: #fef5e7;">+ _id_counter: number</text>
+    <text x="25" y="125" class="property" style="fill: #fef5e7;">+ _id_prefix: string</text>
+    
+    <line x1="15" y1="140" x2="365" y2="140" stroke="#fef5e7" stroke-width="1" opacity="0.3"/>
+    
+    <text x="25" y="170" class="method" style="fill: #f8b739;">+ new_id(type): string</text>
+    
+    <text x="190" y="205" text-anchor="middle" class="comment" style="fill: #fef5e7; font-size: 14px;">⚠️ Required for _id() calls</text>
+  </g>
+  
+  <!-- Reference arrows showing context requirement -->
+  <path d="M 600 1110 L 900 1110 L 900 980 L 1010 980" class="reference-arrow"/>
+  <text x="750" y="1100" class="annotation">requires context</text>
+  
+  <!-- Composition relationships -->
+  <path d="M 350 1200 L 350 1250 L 620 1250" class="composition-arrow"/>
+  <text x="450" y="1240" class="annotation">can contain</text>
+  
+  <path d="M 900 1200 L 900 1250 L 1010 1250" class="composition-arrow"/>
+  <text x="920" y="1240" class="annotation">extends from</text>
+  
+  <!-- Key Features Box -->
+  <g transform="translate(2200, 1150)">
+    <rect width="340" height="320" class="highlight-box" rx="8"/>
+    <text x="170" y="35" text-anchor="middle" class="label" style="font-weight: bold; font-size: 22px;">Key Features</text>
+    
+    <text x="20" y="75" class="property" style="font-size: 18px;">🔄 Reactive Change Events</text>
+    <text x="20" y="105" class="property" style="font-size: 18px;">✓ Type Validation</text>
+    <text x="20" y="135" class="property" style="font-size: 18px;">🔗 Bidirectional Sync</text>
+    <text x="20" y="165" class="property" style="font-size: 18px;">📝 String Parsing</text>
+    <text x="20" y="195" class="property" style="font-size: 18px;">🔒 Immutable Snapshots</text>
+    <text x="20" y="225" class="property" style="font-size: 18px;">🆔 Context-based IDs</text>
+    <text x="20" y="255" class="property" style="font-size: 18px;">🎯 Smart Equality Checks</text>
+    <text x="20" y="285" class="property" style="font-size: 18px;">🔧 Functional Data Types</text>
+  </g>
+  
+  <!-- Footer -->
+  <text x="1280" y="1620" text-anchor="middle" class="comment" style="font-size: 18px;">
+    lang-tools extends lang-mini for reactive MVC data modeling • Dependencies: lang-mini, fnl
+  </text>
+</svg>

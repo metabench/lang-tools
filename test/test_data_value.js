@@ -19,17 +19,6 @@ const Data_Value = require('../Data_Model/Data_Value');
 // The syncing code could be improved / have extra logging put in place.
 //   Want to see exactly when a change fails.
 
-
-
-
-
-
-
-
-
-
-
-
 const {Functional_Data_Type, tof, get_a_sig, get_item_sig, deep_sig} = require('lang-mini');
 
 test('create data_value(3)', (t) => {
@@ -166,6 +155,43 @@ test('create integer typed data_value(3), string data_value("4"), syncing tests'
 
 });
 
+test('three-way syncing and repeated reassignments', (t) => {
+    const dv1 = new Data_Value(100);
+    const dv2 = new Data_Value(200);
+    const dv3 = new Data_Value(300);
+
+    // Sync dv1, dv2 and then sync dv3 with dv1 so that all three are connected.
+    Data_Value.sync(dv1, dv2);
+    Data_Value.sync(dv1, dv3);
+
+    // Change dv1 should update dv2 and dv3.
+    dv1.value = 400;
+    assert.strictEqual(dv1.value, 400);
+    assert.strictEqual(dv2.value, 400);
+    assert.strictEqual(dv3.value, 400);
+
+    // Change dv2
+    dv2.value = 500;
+    assert.strictEqual(dv1.value, 500);
+    assert.strictEqual(dv2.value, 500);
+    assert.strictEqual(dv3.value, 500);
+
+    // Reassign a string value to an integer typed value with conversion
+    const dv4 = new Data_Value({value: 10, data_type: Number});
+    dv4.value = '20';
+    assert.strictEqual(typeof dv4.value, 'number');
+    assert.strictEqual(dv4.value, 20);
+});
+
+test('Data_Value rapid sequential sync', (t) => {
+    const dv1 = new Data_Value(5);
+    const dv2 = new Data_Value(10);
+    Data_Value.sync(dv1, dv2);
+    for (let i = 0; i < 5; i++) {
+        dv1.value = dv1.value + i;
+        assert.strictEqual(dv2.value, dv1.value);
+    }
+});
 
 // See about syncing both 
 
@@ -180,7 +206,6 @@ test('create integer typed data_value(3), string data_value("4"), syncing tests'
 // Data_Value may be an attempt to be too versitile. At least for the moment.
 
 // Using Data_Number, even Data_Integer, as a simpler to implement type of Data_Value with a more restricted and precise API.
-
 
 
 // This seems like a good way to get into exploring the update procedures, the various code paths, and why they sometimes fail.

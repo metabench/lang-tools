@@ -18,6 +18,172 @@ Planned: Version 0.0.10
     Input encoding
     Output encoding
 
+[2025 - Major API Modernization]
+
+**BREAKING CHANGE - Collection .value() → .value getter property**
+
+Status: Planned (not yet implemented)
+Priority: High - but requires careful migration planning
+Scope: Large codebase impact
+
+Current Behavior:
+    Collection items (old Data_Value) use .value() as a METHOD
+    Example: collection.get(0).value() returns the actual value
+    Alternative: collection.get(0)._ accesses internal storage directly
+
+New Behavior:
+    Migrate to .value as a GETTER property (matching new Data_Value API)
+    Example: collection.get(0).value will return the actual value
+    Consistent with modern Data_Value, Data_String, Data_Integer classes
+
+Rationale:
+    - API consistency across old and new data model implementations
+    - Modern ES6 getter pattern more intuitive than method calls
+    - Aligns with new/ directory implementations
+    - Reduces cognitive load when switching between Collection and Data_Value
+
+Migration Challenges:
+    - Collection uses old/Data_Value.js internally
+    - Need to update or replace old/Data_Value.js with getter-based .value
+    - Large downstream impact: jsgui and other dependent projects use .value() extensively
+    - Cannot be done incrementally - breaking change requires coordinated update
+    - Need migration guide and deprecation warnings
+
+Implementation Steps:
+    1. Create new Data_Value implementation with .value getter in old/ directory
+       OR modify existing old/Data_Value.js to add getter while keeping method
+    2. Add deprecation warnings to .value() method: "Use .value property instead"
+    3. Update all lang-tools internal code to use .value property
+    4. Test suite already expects .value property (can validate migration)
+    5. Document breaking change in CHANGELOG
+    6. Update dependent projects (jsgui, etc.) in coordinated release
+    7. Remove .value() method in next major version
+
+Timeline Estimate:
+    - Internal changes: 2-3 days
+    - Dependent project updates: 1-2 weeks (coordinate with jsgui team)
+    - Testing and validation: 1 week
+    - Total: ~3-4 weeks for complete migration
+
+See: TEST_ANALYSIS.md for detailed analysis of current .value() vs .value usage
+
+---
+
+**BUG FIX - Collection should accept null/undefined/boolean values**
+
+Status: Bug identified, not yet fixed
+Priority: Medium
+File: Data_Model/old/Collection.js - push() method
+Issue: Collection.push() silently filters out null, undefined, and boolean values
+
+Current Behavior:
+    collection.push(null)       // Silently ignored, length stays 0
+    collection.push(undefined)  // Silently ignored, length stays 0
+    collection.push(true)       // Silently ignored, length stays 0
+    collection.push(false)      // Silently ignored, length stays 0
+
+Expected Behavior:
+    All primitive values should be accepted and wrapped in Data_Value
+    null, undefined, and booleans are valid data that may need to be stored
+
+Root Cause:
+    The push() method only handles these type cases:
+    - 'object' or 'function' → stored directly
+    - 'array' → wrapped in new Collection
+    - 'string' or 'number' → wrapped in Data_Value
+    - 'data_object', 'control', 'collection' → stored directly
+    
+    Missing: 'boolean', 'null', 'undefined' fall through without handling
+
+Proposed Fix:
+    Add handling for boolean/null/undefined in push() method:
+    ```javascript
+    if (tv === 'string' || tv === 'number' || tv === 'boolean' || 
+        tv === 'null' || tv === 'undefined') {
+        const dv = new Data_Value({
+            'value': value
+        });
+        pos = this._arr.length;
+        this._arr.push(dv);
+        // ... raise change event
+    }
+    ```
+
+Impact:
+    - Low risk - adds functionality without breaking existing behavior
+    - Would allow Collections to be used for checkbox states, optional values, etc.
+    - Fixes 3 failing test cases in test/collection.test.js
+
+Related Tests:
+    - test/collection.test.js: "should handle null values"
+    - test/collection.test.js: "should handle undefined values"  
+    - test/collection.test.js: "should handle boolean values"
+
+---
+
+**BUG FIX - Collection.set() with single value crashes**
+
+Status: Bug identified, not yet fixed
+Priority: Medium
+File: Data_Model/old/Collection.js line 164
+Issue: Calling collection.set(singleValue) throws "Cannot read properties of undefined (reading 'set')"
+
+Current Behavior:
+    const coll = new Collection(['A', 'B']);
+    coll.set('X');  // ❌ TypeError: Cannot read properties of undefined (reading 'set')
+
+Root Cause:
+    Line 164: `return this.super.set(value);`
+    The `this.super` property is undefined - should be using proper prototype chain
+
+Proposed Fix:
+    Replace `this.super.set(value)` with proper parent class method call:
+    ```javascript
+    } else {
+        // Call parent Data_Object.set() method
+        return Data_Object.prototype.set.call(this, value);
+    }
+    ```
+
+Impact:
+    - Low risk - fixes crash without changing behavior
+    - Allows single value to be set on collection (delegates to parent)
+    - Fixes 1 failing test case
+
+Related Test:
+    - test/collection.test.js: "should set with single value"
+
+---
+
+**TEST BUG - Collection index API assumptions**
+
+Status: Test bug identified
+Priority: Low
+File: test/collection.test.js
+Issue: Tests assume index.size() method exists, but Collection index may not have this method
+
+Failing Tests:
+    - "should update index on push" - calls coll.index.size()
+    - "should handle custom index function" - incorrect fn_index signature
+
+Investigation Needed:
+    - What is the actual API for Collection.index?
+    - Does index have a .size() method or should tests use different approach?
+    - For custom index function, what signature should fn_index have?
+    
+Current Test Code (may be wrong):
+    ```javascript
+    expect(coll.index.size()).toBeGreaterThanOrEqual(0);  // Fails: size is not a function
+    const fn_index = (item) => item.value();              // Fails: value not a function for some types
+    ```
+
+Action:
+    - Research actual Collection indexing system API
+    - Update tests to match actual implementation
+    - OR fix Collection to provide expected index.size() method
+
+---
+
 2022 0.0.12 onwards:
 
 Improvements that will help with the jsgui control MVC system.

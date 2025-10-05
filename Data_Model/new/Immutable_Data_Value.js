@@ -92,11 +92,15 @@ class Immutable_Data_Value extends Immutable_Base_Data_Value {
 
             // inner_value could help....
 
+            // TODO <BUG002>: Immutable Data_Value should have a setter that throws an error
+            // Currently only has getter, so assignments silently succeed
+            // See BUGS.md for proposed fix
             Object.defineProperty(this, 'value', {
                 get() {
                     return local_js_value;
                     //return _prop_value;
                 }
+                // MISSING: set() { throw new TypeError('Cannot modify immutable Data_Value'); }
             });
             
         } else {
@@ -116,10 +120,13 @@ class Immutable_Data_Value extends Immutable_Base_Data_Value {
             } else {
                 value = spec.value;
             }
+            // TODO <BUG002>: This property definition also needs a setter that throws
+            // See BUGS.md for proposed fix
             Object.defineProperty(this, 'value', {
                 get() {
                     return value
                 }
+                // MISSING: set() { throw new TypeError('Cannot modify immutable Data_Value'); }
             })
             //field(this, 'value', spec.value);
         }

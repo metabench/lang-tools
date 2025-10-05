@@ -1,7 +1,7 @@
 
 const Data_Number = require('./Data_Number');
 const {Functional_Data_Type, tof, get_a_sig, get_item_sig, deep_sig} = require('lang-mini');
-
+const setup_base_data_value_value_property = require('./setup_base_data_value_value_property');
 
 const Validation_Success = require('./Validation_Success');
 const Validation_Failure = require('./Validation_Failure');
@@ -67,6 +67,8 @@ class Data_Integer extends Data_Number {
             }
         }
         super(spec);
+
+        setup_base_data_value_value_property(this);
 
         if (spec.value) {
             this.value = spec.value;

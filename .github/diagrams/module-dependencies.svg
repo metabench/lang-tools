@@ -1,0 +1,380 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2560 1600" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+  <defs>
+    <style>
+      .title { font: bold 48px 'Segoe UI', Arial, sans-serif; fill: #1a1a1a; }
+      .subtitle { font: 32px 'Segoe UI', Arial, sans-serif; fill: #404040; }
+      .section-title { font: bold 28px 'Segoe UI', Arial, sans-serif; fill: #2c3e50; }
+      .module-name { font: bold 24px 'Segoe UI', Arial, sans-serif; fill: #ffffff; }
+      .file-name { font: 18px 'Consolas', monospace; fill: #2d2d2d; }
+      .comment { font: italic 16px 'Segoe UI', Arial, sans-serif; fill: #666666; }
+      .label { font: 20px 'Segoe UI', Arial, sans-serif; fill: #333333; }
+      .annotation { font: 18px 'Segoe UI', Arial, sans-serif; fill: #555555; }
+      
+      .external-dep { fill: #95a5a6; stroke: #7f8c8d; stroke-width: 3; }
+      .core-module { fill: #3498db; stroke: #2980b9; stroke-width: 3; }
+      .data-model { fill: #2ecc71; stroke: #27ae60; stroke-width: 3; }
+      .utility { fill: #e67e22; stroke: #d35400; stroke-width: 3; }
+      .export { fill: #9b59b6; stroke: #8e44ad; stroke-width: 3; }
+      
+      .requires { stroke: #34495e; stroke-width: 2.5; fill: none; marker-end: url(#req); }
+      .augments { stroke: #e74c3c; stroke-width: 3; fill: none; marker-end: url(#aug); stroke-dasharray: 8,4; }
+      .exports { stroke: #9b59b6; stroke-width: 2.5; fill: none; marker-end: url(#exp); stroke-dasharray: 6,3; }
+      .uses { stroke: #95a5a6; stroke-width: 2; fill: none; marker-end: url(#use); stroke-dasharray: 4,4; }
+    </style>
+    
+    <marker id="req" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#34495e" />
+    </marker>
+    
+    <marker id="aug" markerWidth="12" markerHeight="12" refX="11" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#e74c3c" />
+    </marker>
+    
+    <marker id="exp" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#9b59b6" />
+    </marker>
+    
+    <marker id="use" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#95a5a6" />
+    </marker>
+    
+    <filter id="shadow">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Title -->
+  <text x="1280" y="70" text-anchor="middle" class="title">Module Dependency Graph</text>
+  <text x="1280" y="115" text-anchor="middle" class="subtitle">How lang-tools Components Connect</text>
+  
+  <!-- Legend -->
+  <g transform="translate(100, 150)">
+    <text x="0" y="0" class="label" style="font-weight: bold;">Legend:</text>
+    
+    <rect x="0" y="15" width="150" height="40" class="external-dep" rx="5"/>
+    <text x="75" y="40" text-anchor="middle" class="module-name" style="font-size: 16px;">External Dep</text>
+    
+    <rect x="170" y="15" width="150" height="40" class="core-module" rx="5"/>
+    <text x="245" y="40" text-anchor="middle" class="module-name" style="font-size: 16px;">Core Module</text>
+    
+    <rect x="340" y="15" width="150" height="40" class="data-model" rx="5"/>
+    <text x="415" y="40" text-anchor="middle" class="module-name" style="font-size: 16px;">Data Model</text>
+    
+    <rect x="510" y="15" width="150" height="40" class="utility" rx="5"/>
+    <text x="585" y="40" text-anchor="middle" class="module-name" style="font-size: 16px;">Utility</text>
+    
+    <rect x="680" y="15" width="150" height="40" class="export" rx="5"/>
+    <text x="755" y="40" text-anchor="middle" class="module-name" style="font-size: 16px;">Main Export</text>
+    
+    <!-- Arrow types -->
+    <g transform="translate(900, 20)">
+      <path d="M 0 15 L 100 15" class="requires"/>
+      <text x="110" y="20" class="annotation">requires</text>
+      
+      <path d="M 250 15 L 350 15" class="augments"/>
+      <text x="360" y="20" class="annotation">augments</text>
+      
+      <path d="M 500 15 L 600 15" class="exports"/>
+      <text x="610" y="20" class="annotation">exports</text>
+    </g>
+  </g>
+  
+  <!-- External Dependencies (Top Layer) -->
+  <g transform="translate(200, 280)">
+    <text x="1080" y="-20" text-anchor="middle" class="section-title">External Dependencies</text>
+    
+    <!-- lang-mini -->
+    <g transform="translate(0, 0)">
+      <rect width="380" height="200" class="external-dep" rx="8" filter="url(#shadow)"/>
+      <text x="190" y="35" text-anchor="middle" class="module-name">lang-mini</text>
+      <text x="190" y="60" text-anchor="middle" class="annotation" style="fill: #ecf0f1;">(Platform)</text>
+      
+      <line x1="20" y1="75" x2="360" y2="75" stroke="#ffffff" stroke-width="1.5"/>
+      
+      <text x="30" y="100" class="label" style="fill: #ecf0f1; font-size: 16px;">Provides:</text>
+      <text x="30" y="125" class="annotation" style="fill: #ecf0f1;">• Evented_Class</text>
+      <text x="30" y="145" class="annotation" style="fill: #ecf0f1;">• tof(), each(), fp()</text>
+      <text x="30" y="165" class="annotation" style="fill: #ecf0f1;">• Functional_Data_Type</text>
+      <text x="30" y="185" class="annotation" style="fill: #ecf0f1;">• get_a_sig(), field()</text>
+    </g>
+    
+    <!-- fnl -->
+    <g transform="translate(420, 0)">
+      <rect width="300" height="200" class="external-dep" rx="8" filter="url(#shadow)"/>
+      <text x="150" y="35" text-anchor="middle" class="module-name">fnl</text>
+      <text x="150" y="60" text-anchor="middle" class="annotation" style="fill: #ecf0f1;">(Functional Library)</text>
+      
+      <line x1="20" y1="75" x2="280" y2="75" stroke="#ffffff" stroke-width="1.5"/>
+      
+      <text x="30" y="100" class="label" style="fill: #ecf0f1; font-size: 16px;">Provides:</text>
+      <text x="30" y="125" class="annotation" style="fill: #ecf0f1;">• Functional utilities</text>
+      <text x="30" y="145" class="annotation" style="fill: #ecf0f1;">• (less critical)</text>
+    </g>
+    
+    <!-- Node.js built-ins -->
+    <g transform="translate(760, 0)">
+      <rect width="300" height="200" class="external-dep" rx="8" filter="url(#shadow)"/>
+      <text x="150" y="35" text-anchor="middle" class="module-name">node:*</text>
+      <text x="150" y="60" text-anchor="middle" class="annotation" style="fill: #ecf0f1;">(Built-ins)</text>
+      
+      <line x1="20" y1="75" x2="280" y2="75" stroke="#ffffff" stroke-width="1.5"/>
+      
+      <text x="30" y="100" class="label" style="fill: #ecf0f1; font-size: 16px;">Used in:</text>
+      <text x="30" y="125" class="annotation" style="fill: #ecf0f1;">• test/ (node:test)</text>
+      <text x="30" y="145" class="annotation" style="fill: #ecf0f1;">• util inspection</text>
+    </g>
+  </g>
+  
+  <!-- Core Data Models (Middle Layer) -->
+  <g transform="translate(150, 550)">
+    <text x="1130" y="-20" text-anchor="middle" class="section-title">Data Model Layer</text>
+    
+    <!-- Data_Model -->
+    <g transform="translate(0, 0)">
+      <rect width="320" height="180" class="data-model" rx="8" filter="url(#shadow)"/>
+      <text x="160" y="35" text-anchor="middle" class="module-name">Data_Model</text>
+      <text x="160" y="60" text-anchor="middle" class="file-name" style="fill: #ffffff;">Data_Model/Data_Model.js</text>
+      
+      <line x1="20" y1="75" x2="300" y2="75" stroke="#ffffff" stroke-width="1.5"/>
+      
+      <text x="30" y="100" class="annotation" style="fill: #ffffff;">Base class</text>
+      <text x="30" y="125" class="annotation" style="fill: #ffffff;">extends Evented_Class</text>
+      <text x="30" y="150" class="annotation" style="fill: #ffffff;">+ context</text>
+      <text x="30" y="175" class="annotation" style="fill: #ffffff;">+ __type, __data_model</text>
+    </g>
+    
+    <!-- Mini_Context -->
+    <g transform="translate(360, 0)">
+      <rect width="280" height="180" class="data-model" rx="8" filter="url(#shadow)"/>
+      <text x="140" y="35" text-anchor="middle" class="module-name">Mini_Context</text>
+      <text x="140" y="60" text-anchor="middle" class="file-name" style="fill: #ffffff;">Data_Model/Mini_Context.js</text>
+      
+      <line x1="20" y1="75" x2="260" y2="75" stroke="#ffffff" stroke-width="1.5"/>
+      
+      <text x="30" y="100" class="annotation" style="fill: #ffffff;">ID generation</text>
+      <text x="30" y="125" class="annotation" style="fill: #ffffff;">+ new_id(type)</text>
+    </g>
+    
+    <!-- Data_Value (new) -->
+    <g transform="translate(680, 0)">
+      <rect width="320" height="180" class="data-model" rx="8" filter="url(#shadow)"/>
+      <text x="160" y="35" text-anchor="middle" class="module-name">Data_Value</text>
+      <text x="160" y="60" text-anchor="middle" class="file-name" style="fill: #ffffff;">Data_Model/new/Data_Value.js</text>
+      
+      <line x1="20" y1="75" x2="300" y2="75" stroke="#ffffff" stroke-width="1.5"/>
+      
+      <text x="30" y="100" class="annotation" style="fill: #ffffff;">Typed reactive values</text>
+      <text x="30" y="125" class="annotation" style="fill: #ffffff;">+ validation</text>
+      <text x="30" y="150" class="annotation" style="fill: #ffffff;">+ sync support</text>
+    </g>
+    
+    <!-- Data_Object (old) -->
+    <g transform="translate(1040, 0)">
+      <rect width="320" height="180" class="data-model" rx="8" filter="url(#shadow)"/>
+      <text x="160" y="35" text-anchor="middle" class="module-name">Data_Object</text>
+      <text x="160" y="60" text-anchor="middle" class="file-name" style="fill: #ffffff;">Data_Model/old/Data_Object.js</text>
+      
+      <line x1="20" y1="75" x2="300" y2="75" stroke="#ffffff" stroke-width="1.5"/>
+      
+      <text x="30" y="100" class="annotation" style="fill: #ffffff;">Legacy objects</text>
+      <text x="30" y="125" class="annotation" style="fill: #ffffff;">+ .get()/.set()</text>
+      <text x="30" y="150" class="annotation" style="fill: #ffffff;">+ fields</text>
+    </g>
+    
+    <!-- Collection (old) -->
+    <g transform="translate(1400, 0)">
+      <rect width="320" height="180" class="data-model" rx="8" filter="url(#shadow)"/>
+      <text x="160" y="35" text-anchor="middle" class="module-name">Collection</text>
+      <text x="160" y="60" text-anchor="middle" class="file-name" style="fill: #ffffff;">Data_Model/old/Collection.js</text>
+      
+      <line x1="20" y1="75" x2="300" y2="75" stroke="#ffffff" stroke-width="1.5"/>
+      
+      <text x="30" y="100" class="annotation" style="fill: #ffffff;">Array-like</text>
+      <text x="30" y="125" class="annotation" style="fill: #ffffff;">+ indexing</text>
+      <text x="30" y="150" class="annotation" style="fill: #ffffff;">+ constraints</text>
+    </g>
+    
+    <!-- Immutable variants -->
+    <g transform="translate(1760, 0)">
+      <rect width="320" height="180" class="data-model" rx="8" filter="url(#shadow)" opacity="0.85"/>
+      <text x="160" y="35" text-anchor="middle" class="module-name">Immutable_*</text>
+      <text x="160" y="60" text-anchor="middle" class="file-name" style="fill: #ffffff;">Data_Model/new/Immutable_*.js</text>
+      
+      <line x1="20" y1="75" x2="300" y2="75" stroke="#ffffff" stroke-width="1.5"/>
+      
+      <text x="30" y="100" class="annotation" style="fill: #ffffff;">State snapshots</text>
+      <text x="30" y="125" class="annotation" style="fill: #ffffff;">+ deep immutability</text>
+    </g>
+  </g>
+  
+  <!-- Utilities (Bottom Layer) -->
+  <g transform="translate(150, 800)">
+    <text x="1130" y="-20" text-anchor="middle" class="section-title">Utility & Data Structures Layer</text>
+    
+    <!-- collective -->
+    <g transform="translate(0, 0)">
+      <rect width="280" height="160" class="utility" rx="8" filter="url(#shadow)"/>
+      <text x="140" y="35" text-anchor="middle" class="module-name">collective</text>
+      <text x="140" y="60" text-anchor="middle" class="file-name" style="fill: #ffffff;">collective.js</text>
+      
+      <line x1="20" y1="75" x2="260" y2="75" stroke="#ffffff" stroke-width="1.5"/>
+      
+      <text x="30" y="100" class="annotation" style="fill: #fef5e7;">Proxy-based</text>
+      <text x="30" y="125" class="annotation" style="fill: #fef5e7;">Batch operations</text>
+    </g>
+    
+    <!-- util -->
+    <g transform="translate(320, 0)">
+      <rect width="280" height="160" class="utility" rx="8" filter="url(#shadow)"/>
+      <text x="140" y="35" text-anchor="middle" class="module-name">util</text>
+      <text x="140" y="60" text-anchor="middle" class="file-name" style="fill: #ffffff;">util.js</text>
+      
+      <line x1="20" y1="75" x2="260" y2="75" stroke="#ffffff" stroke-width="1.5"/>
+      
+      <text x="30" y="100" class="annotation" style="fill: #fef5e7;">Vector math</text>
+      <text x="30" y="125" class="annotation" style="fill: #fef5e7;">Type conversions</text>
+    </g>
+    
+    <!-- B_Plus_Tree -->
+    <g transform="translate(640, 0)">
+      <rect width="280" height="160" class="utility" rx="8" filter="url(#shadow)"/>
+      <text x="140" y="35" text-anchor="middle" class="module-name">B_Plus_Tree</text>
+      <text x="140" y="60" text-anchor="middle" class="file-name" style="fill: #ffffff;">b-plus-tree/</text>
+      
+      <line x1="20" y1="75" x2="260" y2="75" stroke="#ffffff" stroke-width="1.5"/>
+      
+      <text x="30" y="100" class="annotation" style="fill: #fef5e7;">Sorted tree</text>
+      <text x="30" y="125" class="annotation" style="fill: #fef5e7;">Self-balancing</text>
+    </g>
+    
+    <!-- Doubly_Linked_List -->
+    <g transform="translate(960, 0)">
+      <rect width="280" height="160" class="utility" rx="8" filter="url(#shadow)"/>
+      <text x="140" y="35" text-anchor="middle" class="module-name">Doubly_Linked_List</text>
+      <text x="140" y="60" text-anchor="middle" class="file-name" style="fill: #ffffff;">doubly-linked-list.js</text>
+      
+      <line x1="20" y1="75" x2="260" y2="75" stroke="#ffffff" stroke-width="1.5"/>
+      
+      <text x="30" y="100" class="annotation" style="fill: #fef5e7;">Bidirectional</text>
+      <text x="30" y="125" class="annotation" style="fill: #fef5e7;">linked list</text>
+    </g>
+    
+    <!-- Ordered_KVS -->
+    <g transform="translate(1280, 0)">
+      <rect width="280" height="160" class="utility" rx="8" filter="url(#shadow)"/>
+      <text x="140" y="35" text-anchor="middle" class="module-name">Ordered_KVS</text>
+      <text x="140" y="60" text-anchor="middle" class="file-name" style="fill: #ffffff;">ordered-kvs.js</text>
+      
+      <line x1="20" y1="75" x2="260" y2="75" stroke="#ffffff" stroke-width="1.5"/>
+      
+      <text x="30" y="100" class="annotation" style="fill: #fef5e7;">Key-Value Store</text>
+      <text x="30" y="125" class="annotation" style="fill: #fef5e7;">Insertion order</text>
+    </g>
+    
+    <!-- Sorted_KVS -->
+    <g transform="translate(1600, 0)">
+      <rect width="280" height="160" class="utility" rx="8" filter="url(#shadow)"/>
+      <text x="140" y="35" text-anchor="middle" class="module-name">Sorted_KVS</text>
+      <text x="140" y="60" text-anchor="middle" class="file-name" style="fill: #ffffff;">sorted-kvs.js</text>
+      
+      <line x1="20" y1="75" x2="260" y2="75" stroke="#ffffff" stroke-width="1.5"/>
+      
+      <text x="30" y="100" class="annotation" style="fill: #fef5e7;">Key-Value Store</text>
+      <text x="30" y="125" class="annotation" style="fill: #fef5e7;">Sorted keys</text>
+    </g>
+  </g>
+  
+  <!-- Main Export (Center) -->
+  <g transform="translate(920, 1030)">
+    <rect width="720" height="220" class="export" rx="10" filter="url(#shadow)"/>
+    <text x="360" y="45" text-anchor="middle" class="module-name" style="font-size: 32px;">lang.js</text>
+    <text x="360" y="75" text-anchor="middle" class="annotation" style="fill: #ffffff; font-size: 20px;">Main Entry Point</text>
+    
+    <line x1="30" y1="90" x2="690" y2="90" stroke="#ffffff" stroke-width="2"/>
+    
+    <text x="40" y="120" class="annotation" style="fill: #ffffff; font-size: 18px;">
+      • Requires lang-mini
+    </text>
+    <text x="40" y="145" class="annotation" style="fill: #ffffff; font-size: 18px;">
+      • Augments it with all exports
+    </text>
+    <text x="40" y="170" class="annotation" style="fill: #ffffff; font-size: 18px;">
+      • Creates Evented_Class instance
+    </text>
+    <text x="40" y="195" class="annotation" style="fill: #ffffff; font-size: 18px;">
+      • Exports as module.exports
+    </text>
+  </g>
+  
+  <!-- Dependency Arrows -->
+  
+  <!-- lang-mini to Data_Model -->
+  <path d="M 390 480 L 310 550" class="requires"/>
+  
+  <!-- lang-mini to Data_Value -->
+  <path d="M 470 480 L 840 550" class="requires"/>
+  
+  <!-- lang-mini to Data_Object -->
+  <path d="M 510 480 L 1200 550" class="requires"/>
+  
+  <!-- lang-mini to Collection -->
+  <path d="M 550 480 L 1560 550" class="requires"/>
+  
+  <!-- lang-mini to utilities -->
+  <path d="M 300 480 L 140 800" class="uses"/>
+  <path d="M 350 480 L 460 800" class="uses"/>
+  
+  <!-- Data_Model to Data_Value, Data_Object, Collection -->
+  <path d="M 320 730 L 680 730" class="requires"/>
+  <path d="M 320 730 L 1040 730" class="requires"/>
+  <path d="M 320 730 L 1400 730" class="requires"/>
+  
+  <!-- Mini_Context to Data models -->
+  <path d="M 580 730 L 680 730" class="uses" stroke-dasharray="2,2"/>
+  <path d="M 580 730 L 1040 730" class="uses" stroke-dasharray="2,2"/>
+  
+  <!-- Data models to main export -->
+  <path d="M 310 730 L 1050 1030" class="exports"/>
+  <path d="M 840 730 L 1200 1030" class="exports"/>
+  <path d="M 1200 730 L 1280 1030" class="exports"/>
+  <path d="M 1560 730 L 1350 1030" class="exports"/>
+  
+  <!-- Utilities to main export -->
+  <path d="M 140 960 L 920 1100" class="exports"/>
+  <path d="M 460 960 L 1020 1100" class="exports"/>
+  <path d="M 780 960 L 1120 1100" class="exports"/>
+  <path d="M 1100 960 L 1220 1100" class="exports"/>
+  <path d="M 1420 960 L 1320 1100" class="exports"/>
+  <path d="M 1740 960 L 1420 1100" class="exports"/>
+  
+  <!-- collective to main export -->
+  <path d="M 140 960 L 920 1100" class="exports"/>
+  
+  <!-- lang-mini augmented by lang.js -->
+  <path d="M 390 480 L 1100 1030" class="augments"/>
+  <text x="745" y="755" class="annotation" style="fill: #e74c3c; font-weight: bold;">augments with all exports</text>
+  
+  <!-- Key Insights Box -->
+  <g transform="translate(100, 1320)">
+    <rect width="2360" height="200" rx="10" fill="#fff9e6" stroke="#f39c12" stroke-width="3"/>
+    <text x="1180" y="40" text-anchor="middle" class="section-title" style="fill: #d68910;">🔑 Dependency Insights</text>
+    
+    <text x="50" y="80" class="label" style="font-size: 18px;">
+      <tspan style="font-weight: bold;">1. lang-mini is foundational</tspan> - provides Evented_Class, type checking (tof), functional utilities
+    </text>
+    <text x="50" y="110" class="label" style="font-size: 18px;">
+      <tspan style="font-weight: bold;">2. Data_Model extends Evented_Class</tspan> - all data structures inherit event capabilities
+    </text>
+    <text x="50" y="140" class="label" style="font-size: 18px;">
+      <tspan style="font-weight: bold;">3. lang.js augments lang-mini</tspan> - adds all lang-tools exports to lang-mini's API surface
+    </text>
+    <text x="50" y="170" class="label" style="font-size: 18px;">
+      <tspan style="font-weight: bold;">4. No build process</tspan> - direct Node.js module resolution, all requires are runtime
+    </text>
+  </g>
+  
+  <!-- Footer -->
+  <text x="1280" y="1580" text-anchor="middle" class="comment" style="font-size: 18px;">
+    lang-tools = lang-mini + reactive data models + specialized data structures
+  </text>
+</svg>

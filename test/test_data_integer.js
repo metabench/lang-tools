@@ -37,10 +37,38 @@ test('create Data_Integer(3)', (t) => {
     console.log('di.value', di.value);
     assert.strictEqual(di.value, 5);
 
-
-
-
 });
 
+test('create Data_Integer with various assignments and error cases', (t) => {
+    const di = new Data_Integer(10);
+    // Check initial value set correctly
+    assert.strictEqual(di.value, 10);
 
-// and syncing it with a Data_String????
+    // Correct conversion: string numeric gets converted to number
+    di.value = '20';
+    assert.strictEqual(di.value, 20);
+
+    // Negative and zero values
+    di.value = -5;
+    assert.strictEqual(di.value, -5);
+    di.value = 0;
+    assert.strictEqual(di.value, 0);
+
+    // Edge: if an invalid input is provided, assume it throws an error.
+    assert.throws(() => { di.value = 'not a number'; }, /error/i);
+});
+
+test('sequential reassignments for Data_Integer', (t) => {
+    const di = new Data_Integer(0);
+    for (let i = 1; i <= 10; i++) {
+        di.value = i.toString();
+        assert.strictEqual(di.value, i);
+    }
+});
+
+test('Data_Integer error on null assignment', (t) => {
+    const di = new Data_Integer(1);
+    assert.throws(() => { di.value = null; }, /error/i);
+});
+
+// and syncing it with a Data_String???

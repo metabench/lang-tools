@@ -51,7 +51,7 @@ class Data_Value extends Data_Model {
     constructor(spec = {}) {
         super(spec);
         this.__data_value = true;
-        console.log('old (1.1) Data_Value constructor');
+        //console.log('old (1.1) Data_Value constructor');
 
         if (spec.context) {
             this.context = spec.context;

@@ -1,5 +1,6 @@
 const Base_Data_Value = require('./Base_Data_Value');
 const {tof} = require('lang-mini');
+const setup_base_data_value_value_property = require('./setup_base_data_value_value_property');
 
 class Data_String extends Base_Data_Value {
     constructor(...a) {
@@ -23,6 +24,11 @@ class Data_String extends Base_Data_Value {
         }
         super(spec);
 
+        setup_base_data_value_value_property(this);
+
+        if (spec.value) {
+            this.value = spec.value;
+        }
     }
 }
 

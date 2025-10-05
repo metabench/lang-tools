@@ -159,9 +159,15 @@ class Collection extends Data_Object {
                 value.each(function (v, i) {
                     that.push(v);
                 });
+            } else if (tval === 'string' || tval === 'number' || tval === 'boolean' || tval === 'null' || tval === 'undefined') {
+                // Single primitive value: clear and push it
+                this.clear();
+                return this.push(value);
             } else {
                 //console.log("_super:" + value);
-                return this.super.set(value);
+                // Fixed <BUG004>: Use proper prototype chain instead of undefined this.super
+                const Data_Object = require('./Data_Object');
+                return Data_Object.prototype.set.call(this, value);
             }
         }
     }
@@ -649,7 +655,8 @@ class Collection extends Data_Object {
             }
         }
 
-        if (tv === 'string' || tv === 'number') {
+        // Fixed <BUG003>: Handle boolean, null, undefined by wrapping in Data_Value
+        if (tv === 'string' || tv === 'number' || tv === 'boolean' || tv === 'null' || tv === 'undefined') {
             // Not so sure about this now.
             const dv = new Data_Value({
                 'value': value
