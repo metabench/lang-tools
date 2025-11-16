@@ -5,7 +5,7 @@ const Value_Set_Attempt = require('./Value_Set_Attempt');
 const Data_Model = require('../Data_Model');
 const Immutable_Data_Model = require('./Immutable_Data_Model');
 const Immutable_Data_Value = require('./Immutable_Data_Value');
-const {is_defined, input_processors, field, tof, each, is_array, Data_Type} = jsgui;
+const {is_defined, input_processors, tof, each, is_array, Data_Type} = jsgui;
 
 
 
@@ -102,28 +102,14 @@ const validate_data_value = data_value => {
 class Data_Value extends Base_Data_Value {
     constructor(spec = {}) {
 
-        //let using_value_as_spec;
-        if (typeof spec !== 'object') {
-            spec = {
-                value: spec
-            }
-        }
+        const spec_is_plain_object = spec !== null && typeof spec === 'object' && !Array.isArray(spec);
+        const actual_spec = spec_is_plain_object ? spec : {value: spec};
+        super(actual_spec);
 
-        super(spec);
+        const initial_value_is_present = Object.prototype.hasOwnProperty.call(actual_spec, 'value');
+        const initial_value = initial_value_is_present ? actual_spec.value : undefined;
 
-
-        this.__data_value = true;
-        this.__type_name = 'data_value';
-        const that = this;
-        if (spec.data_type) {
-            this.data_type = spec.data_type;
-        } else if (spec.value?.data_type) {
-            this.data_type = spec.value.data_type;
-        }
-        if (spec.context) {
-            this.context = spec.context;
-        }
-        const {data_type, context} = this;
+        const {data_type} = this;
         
 
         // If it previously did not validate, but it then does....
@@ -143,29 +129,14 @@ class Data_Value extends Base_Data_Value {
 
             setup_data_value_data_type_set(this, data_type);
 
-            // string typed??? String typed????
-
-            
-            if (spec.value) {
-                this.value = spec.value;
+            if (initial_value_is_present && is_defined(initial_value)) {
+                this.value = initial_value;
             }
             
         } else {
-
-            // just a field????
-            //   maybe it's not properly recohered on the client-side.
-
-            //console.log('* Data_Value setting .value as a field');
-            //  does not seem to be working properly here.
-            //    maybe look into this further, when not using a data_type.
-
-            // A more advanced system here than just 'field'?
-
-            // Some kind of pre-set event. Validation could then take place, and send something back to the code that would
-            //   do the set, giving a reason why the set operation will / should not take place.
-
-
-            field(this, 'value', spec.value);
+            if (initial_value_is_present) {
+                this.value = actual_spec.value;
+            }
         }
         
 
@@ -184,99 +155,34 @@ class Data_Value extends Base_Data_Value {
         
         const attempt_set_value = this.attempt_set_value = (value) => {
             const get_local_js_value_copy = () => {
-                // TODO <BUG001>: local_js_value is not defined - should this be 'value' or 'this._'?
-                // See BUGS.md for details and proposed fixes
-                const tljsv = tof(local_js_value);
-                if (tljsv === 'undefined' || tljsv === 'string' || tljsv === 'number') {
-                    return local_js_value;
+                const lv = this.value;
+                const tljsv = tof(lv);
+                if (tljsv === 'undefined' || tljsv === 'string' || tljsv === 'number' || tljsv === 'array' || tljsv === 'object' || tljsv === 'data_value') {
+                    return lv;
                 } else {
-                    console.log('local_js_value', local_js_value);
-                    console.log('tljsv', tljsv);
-                    console.trace();
-                    throw 'stop';
+                    return lv;
                 }
             }
-
-            // There will be some kind of parsing going on somehow.
 
             const old_local_js_value = get_local_js_value_copy();
             const old_equals_new = more_general_equals(old_local_js_value, value);
             if (old_equals_new === true) {
-
-                // But no validation event raised....
-
                 return new Value_Set_Attempt({success: false, equal_values: true});
-            } else {
-                if (this.data_type === undefined) {
-                    local_js_value = value;
-                    const o_change = {
-                        name: 'value',
-                        old: old_local_js_value,
-                        value
-                    }
-                    this.raise('change', o_change);
-                    return new Value_Set_Attempt({success: true, value});
-                } else if (this.data_type instanceof Data_Type) {
-                    const t_value = tof(value);
-                    if (t_value === 'string') {
-                        if (this.data_type.parse_string) {
-                            const parsed_value = this.data_type.parse_string(value);
-                            if (parsed_value !== undefined) {
-                                const res = attempt_set_value(parsed_value);
-                                res.parsed = true;
-                                return res;
-                            } else {
-                                return new Value_Set_Attempt({success: false, value});
-                            }
-                        } else {
-                            console.trace();
-                            throw 'NYI';
-                        }
-                    } else {
-                        if (t_value === 'number') {
-                            const validation = this.data_type.validate(value);
-                            if (validation === true) {
-                                local_js_value = value;
-                                const o_change = {
-                                    name: 'value',
-                                    old: old_local_js_value,
-                                    value
-                                }
-                                this.raise('change', o_change);
-                                return new Value_Set_Attempt({success: true, old: old_local_js_value, value});
-                            } else {
-                                return new Value_Set_Attempt({success: false, value});
-                            }
-                        } else {
-                            console.log('t_value', t_value);
-                            console.trace();
-                            throw 'NYI';
-                        }
-                    }
-                } else if (this.data_type === String) {
-                    if (typeof value === 'number') {
-                        const res = attempt_set_value(value + '');
-                        res.data_type_transformation = ['number', 'string'];
-                        return res;
-                    } else if (typeof value === 'string') {
-                        local_js_value = value;
-                        const o_change = {
-                            name: 'value',
-                            old: old_local_js_value,
-                            value
-                        }
-                        this.raise('change', o_change);
-                        return new Value_Set_Attempt({success: true, old: old_local_js_value, value});
-                    } else {
-                        console.trace();
-                        throw 'NYI';
-                    }
-                } else {
-                    console.log('this.data_type', this.data_type);
-                    console.trace();
-                    throw 'NYI';
-                }
             }
+
+            try {
+                this.value = value;
+            } catch (error) {
+                return new Value_Set_Attempt({success: false, value: old_local_js_value, error});
+            }
+
+            const new_local_js_value = get_local_js_value_copy();
+            const changed = !more_general_equals(old_local_js_value, new_local_js_value);
+            return new Value_Set_Attempt({
+                success: changed,
+                old: old_local_js_value,
+                value: new_local_js_value
+            });
         }
         this.__type = 'data_value';
         this._relationships = {};
@@ -349,22 +255,65 @@ class Data_Value extends Base_Data_Value {
     }
 };
 
+const ensure_sync_state = (data_value) => {
+    if (!data_value.__sync_state) {
+        Object.defineProperty(data_value, '__sync_state', {
+            value: {
+                updatingFrom: new Set()
+            },
+            enumerable: false
+        });
+    }
+    return data_value.__sync_state;
+};
+
+const has_defined_value = (data_value) => typeof data_value.value !== 'undefined';
+
+const copy_initial_value = (from, to) => {
+    const source_state = ensure_sync_state(from);
+    source_state.updatingFrom.add(to);
+    try {
+        to.value = from.value;
+    } finally {
+        source_state.updatingFrom.delete(to);
+    }
+};
+
+const propagate_sync_value = (source, target) => {
+    source.on('change', e => {
+        if (e.name !== 'value') {
+            return;
+        }
+        const {updatingFrom} = ensure_sync_state(target);
+        if (updatingFrom.has(source)) {
+            return;
+        }
+        updatingFrom.add(source);
+        try {
+            target.value = e.value;
+        } finally {
+            updatingFrom.delete(source);
+        }
+    });
+};
+
+const align_initial_values = (a, b) => {
+    const a_has_value = has_defined_value(a);
+    const b_has_value = has_defined_value(b);
+    if (a_has_value && !b_has_value) {
+        copy_initial_value(a, b);
+    } else if (!a_has_value && b_has_value) {
+        copy_initial_value(b, a);
+    }
+};
+
 Data_Value.sync = (a, b) => {
     if (a instanceof Base_Data_Value && b instanceof Base_Data_Value) {
 
-        a.on('change', e => {
-            const {name, old, value} = e;
-            if (name === 'value') {
-                b.value = value;
-            }
-        });
+        propagate_sync_value(a, b);
+        propagate_sync_value(b, a);
 
-        b.on('change', e => {
-            const {name, old, value} = e;
-            if (name === 'value') {
-                a.value = value;
-            }
-        });
+        align_initial_values(a, b);
 
     } else {
         console.trace();

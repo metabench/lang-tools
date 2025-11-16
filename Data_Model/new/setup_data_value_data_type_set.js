@@ -1,17 +1,33 @@
 var jsgui = require('lang-mini');
 const {more_general_equals} = require('./tools');
 const Base_Data_Value = require('./Base_Data_Value');
-const Value_Set_Attempt = require('./Value_Set_Attempt');
 const Data_Model = require('../Data_Model');
 const Immutable_Data_Model = require('./Immutable_Data_Model');
 const Immutable_Data_Value = require('./Immutable_Data_Value');
-const {is_defined, input_processors, field, tof, each, is_array, Data_Type} = jsgui;
+const {is_defined, input_processors, field, tof, each, is_array} = jsgui;
+const Validation_Success = require('./Validation_Success');
 
 const setup_data_value_data_type_set = (data_value, data_type) => {
     let local_js_value;
 
+    const validation_success = (value, transformed_value) => {
+        const res = {
+            validation: new Validation_Success(),
+            value
+        };
+        if (transformed_value !== undefined) {
+            res.transformed_value = transformed_value;
+        }
+        return res;
+    };
+
+    const unwrap_data_value = (value) => value instanceof Base_Data_Value ? value.value : value;
+    const is_functional_data_type = (dt) => !!dt && typeof dt.validate === 'function';
+
     const define_string_value_property = () => {
 
+        // Only define the property if it does not already exist
+        if (!Object.getOwnPropertyDescriptor(data_value, 'value')) {
         Object.defineProperty(data_value, 'value', {
             get() {
                 return local_js_value;
@@ -107,9 +123,89 @@ const setup_data_value_data_type_set = (data_value, data_type) => {
                 }
             }
         });
+        } else {
+            const transform_string_value = (raw) => {
+                const candidate = unwrap_data_value(raw);
+                if (candidate === undefined || candidate === null) {
+                    return validation_success(candidate);
+                }
+                if (typeof candidate === 'string') {
+                    return validation_success(candidate);
+                }
+                if (typeof candidate === 'number' || typeof candidate === 'boolean') {
+                    return validation_success(candidate, candidate + '');
+                }
+                return {
+                    validation: false,
+                    value: candidate
+                };
+            }
+            data_value.transform_validate_value = transform_string_value;
+        }
+    }
+
+    const define_number_value_property = () => {
+        const transform_number_value = (raw) => {
+            const candidate = unwrap_data_value(raw);
+            if (candidate === undefined || candidate === null) {
+                return validation_success(candidate);
+            }
+            if (typeof candidate === 'number') {
+                if (Number.isNaN(candidate)) {
+                    return {
+                        validation: false,
+                        value: candidate
+                    };
+                }
+                return validation_success(candidate);
+            }
+            if (typeof candidate === 'string') {
+                const trimmed = candidate.trim();
+                if (trimmed.length === 0) {
+                    return {
+                        validation: false,
+                        value: candidate
+                    };
+                }
+                const parsed = Number(trimmed);
+                if (!Number.isNaN(parsed)) {
+                    return validation_success(candidate, parsed);
+                }
+                return {
+                    validation: false,
+                    value: candidate
+                };
+            }
+            return {
+                validation: false,
+                value: candidate
+            };
+        }
+        data_value.transform_validate_value = transform_number_value;
     }
 
     const define_data_type_typed_value_property = () => {
+        const descriptor = Object.getOwnPropertyDescriptor(data_value, 'value');
+        if (descriptor) {
+            const transform_data_type_value = (raw) => {
+                const candidate = unwrap_data_value(raw);
+                if (data_type.validate(candidate)) {
+                    return validation_success(candidate);
+                }
+                if (typeof candidate === 'string' && typeof data_type.parse_string === 'function') {
+                    const parsed = data_type.parse_string(candidate);
+                    if (parsed !== undefined && data_type.validate(parsed)) {
+                        return validation_success(candidate, parsed);
+                    }
+                }
+                return {
+                    validation: false,
+                    value: candidate
+                };
+            }
+            data_value.transform_validate_value = transform_data_type_value;
+            return;
+        }
         const {wrap_properties, property_names, property_data_types, wrap_value_inner_values, value_js_type,
             abbreviated_property_names, named_property_access, numbered_property_access, parse_string} = data_type;
         let num_properties;
@@ -511,7 +607,9 @@ const setup_data_value_data_type_set = (data_value, data_type) => {
 
     if (data_type === String) {
         define_string_value_property();
-    } else if (data_type instanceof Data_Type) {
+    } else if (data_type === Number) {
+        define_number_value_property();
+    } else if (is_functional_data_type(data_type)) {
         define_data_type_typed_value_property();
     } else {
         console.trace();

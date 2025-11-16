@@ -4,17 +4,21 @@
     "license": "MIT",
     "dependencies": {
         "fnl": "^0.0.37",
-        "lang-mini": "^0.0.44"
+        "lang-mini": "^0.0.46"
     },
     "devDependencies": {
         "jest": "^30.2.0"
     },
     "scripts": {
         "start": "node ./lang",
-        "test": "jest",
+        "test": "jest --runInBand --forceExit",
         "test:watch": "jest --watch",
         "test:coverage": "jest --coverage",
-        "test:legacy": "node test/test-all.js"
+        "test:legacy": "node test/test-all.js",
+        "test:careful": "node scripts/jest_careful_runner.mjs",
+        "test:list": "node scripts/jest_careful_runner.mjs --list-only",
+        "test:data_value": "node scripts/jest_careful_runner.mjs test/data_value.test.js",
+        "test:data_value:json": "jest --runInBand --runTestsByPath test/data_value.test.js --json --outputFile tmp-data-value.json"
     },
     "comments": [
         "Should possibly have the more comprehensive lang tools for plugging into jsgui and doing advanced coding."
@@ -28,5 +32,5 @@
         "type": "git",
         "url": "https://github.com/metabench/lang-tools.git"
     },
-    "version": "0.0.40"
+    "version": "0.0.41"
 }

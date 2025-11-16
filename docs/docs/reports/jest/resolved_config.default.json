@@ -1,0 +1,188 @@
+﻿{
+  "configs": [
+    {
+      "automock": false,
+      "cache": true,
+      "cacheDirectory": "C:\\Users\\james\\AppData\\Local\\Temp\\jest",
+      "clearMocks": false,
+      "collectCoverageFrom": [
+        "*.js",
+        "Data_Model/**/*.js",
+        "b-plus-tree/**/*.js",
+        "!test/**",
+        "!examples/**",
+        "!exp/**",
+        "!transform/**",
+        "!node_modules/**",
+        "!coverage/**"
+      ],
+      "coverageDirectory": "C:\\Users\\james\\Documents\\repos\\lang-tools\\coverage",
+      "coveragePathIgnorePatterns": [
+        "\\\\node_modules\\\\"
+      ],
+      "coverageReporters": [
+        "text",
+        "lcov",
+        "html"
+      ],
+      "cwd": "C:\\Users\\james\\Documents\\repos\\lang-tools",
+      "detectLeaks": false,
+      "detectOpenHandles": false,
+      "errorOnDeprecated": false,
+      "extensionsToTreatAsEsm": [],
+      "fakeTimers": {
+        "enableGlobally": false
+      },
+      "forceCoverageMatch": [],
+      "globals": {},
+      "haste": {
+        "computeSha1": false,
+        "enableSymlinks": false,
+        "forceNodeFilesystemAPI": true,
+        "throwOnModuleCollision": false
+      },
+      "id": "f75142b5d036a28c409fa20b12d5dbce",
+      "injectGlobals": true,
+      "moduleDirectories": [
+        "node_modules"
+      ],
+      "moduleFileExtensions": [
+        "js",
+        "mjs",
+        "cjs",
+        "jsx",
+        "ts",
+        "mts",
+        "cts",
+        "tsx",
+        "json",
+        "node"
+      ],
+      "moduleNameMapper": [],
+      "modulePathIgnorePatterns": [],
+      "openHandlesTimeout": 1000,
+      "prettierPath": "prettier",
+      "resetMocks": false,
+      "resetModules": false,
+      "restoreMocks": false,
+      "rootDir": "C:\\Users\\james\\Documents\\repos\\lang-tools",
+      "roots": [
+        "C:\\Users\\james\\Documents\\repos\\lang-tools"
+      ],
+      "runner": "C:\\Users\\james\\Documents\\repos\\lang-tools\\node_modules\\jest-runner\\build\\index.js",
+      "sandboxInjectedGlobals": [],
+      "setupFiles": [],
+      "setupFilesAfterEnv": [
+        "C:\\Users\\james\\Documents\\repos\\lang-tools\\test\\setup.js"
+      ],
+      "skipFilter": false,
+      "slowTestThreshold": 5,
+      "snapshotFormat": {
+        "escapeString": false,
+        "printBasicPrototype": false
+      },
+      "snapshotSerializers": [],
+      "testEnvironment": "C:\\Users\\james\\Documents\\repos\\lang-tools\\node_modules\\jest-environment-node\\build\\index.js",
+      "testEnvironmentOptions": {},
+      "testLocationInResults": false,
+      "testMatch": [
+        "**/test/**/*.test.js",
+        "**/test/**/*.spec.js"
+      ],
+      "testPathIgnorePatterns": [
+        "\\\\node_modules\\\\"
+      ],
+      "testRegex": [],
+      "testRunner": "C:\\Users\\james\\Documents\\repos\\lang-tools\\node_modules\\jest-circus\\build\\runner.js",
+      "testTimeout": 10000,
+      "transform": [
+        [
+          "\\.[jt]sx?$",
+          "C:\\Users\\james\\Documents\\repos\\lang-tools\\node_modules\\babel-jest\\build\\index.js",
+          {}
+        ]
+      ],
+      "transformIgnorePatterns": [
+        "\\\\node_modules\\\\",
+        "\\.pnp\\.[^\\\\]+$"
+      ],
+      "waitForUnhandledRejections": false,
+      "watchPathIgnorePatterns": []
+    }
+  ],
+  "globalConfig": {
+    "bail": 0,
+    "changedFilesWithAncestor": false,
+    "ci": false,
+    "collectCoverage": false,
+    "collectCoverageFrom": [
+      "*.js",
+      "Data_Model/**/*.js",
+      "b-plus-tree/**/*.js",
+      "!test/**",
+      "!examples/**",
+      "!exp/**",
+      "!transform/**",
+      "!node_modules/**",
+      "!coverage/**"
+    ],
+    "coverageDirectory": "C:\\Users\\james\\Documents\\repos\\lang-tools\\coverage",
+    "coverageProvider": "babel",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 60,
+        "functions": 70,
+        "lines": 70,
+        "statements": 70
+      }
+    },
+    "detectLeaks": false,
+    "detectOpenHandles": false,
+    "errorOnDeprecated": false,
+    "expand": false,
+    "findRelatedTests": false,
+    "forceExit": false,
+    "json": false,
+    "lastCommit": false,
+    "listTests": false,
+    "logHeapUsage": false,
+    "maxConcurrency": 5,
+    "maxWorkers": 31,
+    "noStackTrace": false,
+    "nonFlagArgs": [],
+    "notify": false,
+    "notifyMode": "failure-change",
+    "onlyChanged": false,
+    "onlyFailures": false,
+    "openHandlesTimeout": 1000,
+    "passWithNoTests": false,
+    "projects": [],
+    "rootDir": "C:\\Users\\james\\Documents\\repos\\lang-tools",
+    "runInBand": false,
+    "runTestsByPath": false,
+    "seed": -878724952,
+    "skipFilter": false,
+    "snapshotFormat": {
+      "escapeString": false,
+      "printBasicPrototype": false
+    },
+    "testFailureExitCode": 1,
+    "testPathPatterns": [],
+    "testSequencer": "C:\\Users\\james\\Documents\\repos\\lang-tools\\node_modules\\@jest\\test-sequencer\\build\\index.js",
+    "testTimeout": 10000,
+    "updateSnapshot": "new",
+    "useStderr": false,
+    "verbose": true,
+    "waitForUnhandledRejections": false,
+    "watch": false,
+    "watchAll": false,
+    "watchman": true,
+    "workerThreads": false
+  },
+  "version": "30.1.3"
+}

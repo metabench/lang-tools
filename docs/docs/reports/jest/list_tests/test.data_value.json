@@ -1,0 +1,12 @@
+{
+  "command": [
+    "npx.cmd",
+    "jest",
+    "--runTestsByPath",
+    "test/data_value.test.js",
+    "--listTests"
+  ],
+  "tests": [
+    "C:\\Users\\james\\Documents\\repos\\lang-tools\\test\\data_value.test.js"
+  ]
+}

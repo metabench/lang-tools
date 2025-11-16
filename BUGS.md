@@ -1,6 +1,36 @@
 # lang-tools Bug Tracking System
 
 **Last Updated**: 2025-10-05  
+
+## 🔴 CRITICAL BUGS (P0) - Fix Immediately
+
+### <BUG001> Data_Value.attempt_set_value - Undefined Variable
+**Code Location**: Search for `<BUG001>` in `Data_Model/new/Data_Value.js`
+
+**Issue**: Variable `local_js_value` is referenced but never defined in scope.
+
+**Investigation Needed**:
+- What should `local_js_value` reference? 
+- Should it be `value` parameter?
+- Should it be `this._` internal storage?
+- Check surrounding code for context
+
+**Proposed Fix**:
+```javascript
+// Option 1: Use parameter
+const get_local_js_value_copy = () => {
+    const tljsv = tof(value);  // Use the parameter passed to attempt_set_value
+
+// Option 2: Use internal storage
+const get_local_js_value_copy = () => {
+    const tljsv = tof(this._);  // Use internal value storage
+```
+
+**Code Location**: Search for `<BUG001>` in `Data_Model/new/Data_Value.js`
+
+# lang-tools Bug Tracking System
+
+**Last Updated**: 2025-10-05  
 **Test Status**: 203/280 passing (73%)
 
 This document uses searchable bug IDs (e.g., `<BUG001>`) that correspond to TODO comments in the source code. See `.github/AGENTS.md` for instructions on how AI agents should use this system to fix bugs.

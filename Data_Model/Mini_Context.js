@@ -4,20 +4,12 @@ class Mini_Context {
     // Need quite a simple mechanism to get IDs for objects.
     // They will be typed objects/
     constructor(spec) {
-        var map_typed_counts = {};
-        var typed_id = function (str_type) {
-            throw 'stop Mini_Context typed id';
-            var res;
-            if (!map_typed_counts[str_type]) {
-                res = str_type + '_0';
-                map_typed_counts[str_type] = 1;
-            } else {
-                res = str_type + '_' + map_typed_counts[str_type];
-                map_typed_counts[str_type]++;
-            }
-            return res;
+        const map_typed_counts = Object.create(null);
+        this.new_id = (str_type = 'item') => {
+            const current = map_typed_counts[str_type] || 0;
+            map_typed_counts[str_type] = current + 1;
+            return `${str_type}_${current}`;
         };
-        this.new_id = typed_id;
         //new_id
     }
     'make'(abstract_object) {

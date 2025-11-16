@@ -433,6 +433,14 @@ dv.on('change', (e) => {
 dv.value = 100; // Triggers change event
 ```
 
+## For contributors and AI agents
+If you are contributing fixes, features, or running as an automated agent, start with:
+- `docs/agent-on-ramp.md` — first-time steps and quick checks
+- `.github/copilot-instructions.md` — agent-specific guidance and patterns
+- `BUGS.md` and `AGENTS.md` — bug tracking and workflows
+- `docs/workflows/migrate-to-modern-data-model.md` — migration path to modern `Data_Model` implementations
+
+
 **Type Validation:**
 
 ```javascript
@@ -765,21 +773,45 @@ node examples/ex_collection.js
 
 ## Testing
 
-### Run Tests
+### Run Tests (list-first)
+
+Always confirm what Jest **would** run before executing a suite. `--listTests` exits immediately, which keeps Copilot agents from hanging open shells. Persisting the dry-run output with `scripts/capture-list-tests.js` also gives reviewers deterministic evidence.
 
 ```bash
-# Run all tests
-npm test
+# List the entire suite (no execution)
+npx jest --runInBand --listTests
 
-# Run tests in watch mode
-npm run test:watch
+# List an explicit file
+npx jest --runTestsByPath test/data_value.test.js --listTests
+
+# Persist a dry-run artifact (optional)
+node scripts/capture-list-tests.js docs/docs/reports/jest/list_tests/manual.data_value.json -- --runTestsByPath test/data_value.test.js
+
+# Shortcut: use the careful runner wrapper
+npm run test:list -- test/data_value.test.js
+```
+
+Once the selection looks correct, run the matching command. Avoid `npm run test:watch` in automated environments because it never exits on its own.
+
+```bash
+# Run all tests (uses --runInBand --forceExit via package script)
+npm test
 
 # Run with coverage
 npm run test:coverage
 
+# Run a focused file
+npx jest --runInBand --runTestsByPath test/data_value.test.js
+npm run test:careful -- test/data_value.test.js
+
 # Run legacy node:test suite
 npm run test:legacy
+
+# Run skipped legacy Jest suites (opt-in)
+RUN_LEGACY_TESTS=1 npx jest --runInBand --runTestsByPath test/old_data_value.test.js
 ```
+
+> Legacy Jest suites (`test/old_*.test.js`) are skipped by default. Set `RUN_LEGACY_TESTS=1` for any command that should include them.
 
 ### Test Coverage
 
@@ -878,8 +910,8 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 Contributions welcome! Please:
 
-1. Run tests: `npm test`
-2. Ensure coverage: `npm run test:coverage`
+1. Record the `--listTests` command(s) you used to confirm the selection (e.g., `npx jest --runInBand --listTests`, `npx jest --runTestsByPath test/data_value.test.js --listTests`).
+2. Run the matching suites (`npm test`, `npx jest --runInBand --runTestsByPath ...`, `npm run test:coverage`).
 3. Follow existing code style
 4. Add tests for new features
 5. Update documentation

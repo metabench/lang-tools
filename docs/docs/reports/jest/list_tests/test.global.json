@@ -1,0 +1,21 @@
+{
+  "command": [
+    "npx.cmd",
+    "jest",
+    "--listTests"
+  ],
+  "tests": [
+    "C:\\Users\\james\\Documents\\repos\\lang-tools\\test\\old_data_value.test.js",
+    "C:\\Users\\james\\Documents\\repos\\lang-tools\\test\\old_data_object.test.js",
+    "C:\\Users\\james\\Documents\\repos\\lang-tools\\test\\collection.test.js",
+    "C:\\Users\\james\\Documents\\repos\\lang-tools\\test\\data_integer.test.js",
+    "C:\\Users\\james\\Documents\\repos\\lang-tools\\test\\data_string.test.js",
+    "C:\\Users\\james\\Documents\\repos\\lang-tools\\test\\util.test.js",
+    "C:\\Users\\james\\Documents\\repos\\lang-tools\\test\\data_value.test.js",
+    "C:\\Users\\james\\Documents\\repos\\lang-tools\\test\\new_data_object.test.js",
+    "C:\\Users\\james\\Documents\\repos\\lang-tools\\test\\data_model_comparison.test.js",
+    "C:\\Users\\james\\Documents\\repos\\lang-tools\\test\\collection_new_data_value_compat.test.js",
+    "C:\\Users\\james\\Documents\\repos\\lang-tools\\test\\collective.test.js",
+    "C:\\Users\\james\\Documents\\repos\\lang-tools\\test\\tools_equals.test.js"
+  ]
+}

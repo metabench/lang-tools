@@ -1,169 +1,76 @@
-# lang-tools AI Agent Instructions
+# lang-tools AI Agent Guide — Quick Reference
 
-## Project Overview
-lang-tools is a JavaScript data structures and utilities library that extends `lang-mini` with advanced data modeling capabilities. The core focus is on **reactive data models** (Data_Model, Data_Value, Data_Object) that provide event-driven, typed data structures with validation and synchronization support.
+Scope & Architecture
+- lang-tools extends `lang-mini` with reactive data models, collections, and utilities. The main entrypoint is `lang.js` (re-exports modules onto a `lang-mini` object).
+- Core split: `Data_Model/new` (active, typed values + immutable variants) vs `Data_Model/old` (legacy `Data_Object`/`Collection`). Root `Data_Model/*.js` are thin wrappers—edit `new/` or `old/` directly.
+- Main contracts: `Evented_Class`-driven reactivity, `Functional_Data_Type` validation, `Mini_Context` for IDs, `Immutable_*` snapshots for freeze-safe state sharing.
 
-📊 **[View Architecture Diagrams](./architecture-diagrams.md)** - Detailed SVG visualizations of class hierarchy, directory patterns, data flow, and module dependencies.
+Key Repo Patterns
+- Data_Value vs Collection: `Data_Value` uses `.value` (getter/setter) while legacy `Collection` exposes `.value()` method. Check types with `tof()` (from `lang-mini`) before accessing.
+- Syncing: `Data_Value.sync(a,b)` (see `Data_Model/new/Data_Value.js`) wires bidirectional change listeners. Avoid redundant set loops by using `more_general_equals` to guard assignments.
+	Example: 
+	```js
+	const dv1 = new Data_Value(10);
+	const dv2 = new Data_Value(20);
+	Data_Value.sync(dv1, dv2); // bidirectional syncing: changing dv1.value updates dv2.value
+	```
+- Utilities: `collective.js` is a Proxy-based batch API for arrays; use it for read-only batch calls, not reactive updates.
+	Example: `collective([{value: 1}, {value: 2}]).value // [1, 2]`
+- Immutables: `toImmutable()` returns deep-frozen wrappers (see `Immutable_Data_Value.js`). Treat immutable objects as readonly—do not attempt to mutate nested contents.
 
-🐛 **[Bug Tracking System](../BUGS.md)** - Searchable bug registry with IDs like `<BUG001>`. See **[AGENTS.md](./AGENTS.md)** for bug fixing workflow and instructions.
+Developer Workflows
+- Testing: Dry-run first with `npx jest --runInBand --listTests` (entire suite) or `npx jest --runTestsByPath <file> --listTests` (focused) before executing. The shortcut `npm run test:list -- <files>` wraps these guards. After confirming selection, run `npm test` (Jest) or `npm run test:careful -- <files>` / `npx jest --runInBand --runTestsByPath <file>`. Coverage: `npm run test:coverage`. Legacy node tests: `npm run test:legacy`. Avoid `npm run test:watch` while acting as an agent because it never exits automatically.
+- Examples: run `node examples/ex_data_value.js` or `node examples/ex_collection.js` to verify golden behaviors quickly.
+- Local edits: use `npx jest --runTestsByPath test/data_value.test.js --listTests` to confirm the file, then (if needed) run `npx jest --runInBand --runTestsByPath test/data_value.test.js` or combine with `-t` filters.
 
-## Architecture: The Data Model System
+Bug and PR Guidance
+- Always search BUGS.md for `<BUG###>` references, then find the `// TODO <BUG###>` lines in code. Update `BUGS.md` when closing a bug, and remove or update the TODO comment.
+- Common fix checklist: implement code fix, add/adjust tests, update docs (README/AGENTS/BUGS), run full tests, and include a clear commit message linking the bug ID.
 
-### Core Hierarchy
-The project centers on a data model inheritance chain:
-- **Data_Model** (base class, extends `Evented_Class` from lang-mini) - provides event infrastructure
-- **Data_Object** (`Data_Model/old/Data_Object.js`) - complex objects with fields, relationships, and hierarchies
-- **Data_Value** (`Data_Model/new/Data_Value.js`) - typed values with validation, change events, and sync capabilities
-- **Immutable_Data_Value** / **Immutable_Data_Model** - immutable counterparts for snapshots and safe state passing
+Developer Conventions & Gotchas
+- Style: tabs, snake_case, sparse semicolons. Follow existing patterns; don't reformat large files in a single change.
+- Type checks: prefer `tof()` for polymorphic type checks. Avoid fragile `typeof` checks for Data_Model classes.
+- Event/ID contexts: Many constructors accept `{context: new Mini_Context()}`—lack of context causes `_id()` errors.
+- Watch out: mixing `.value` vs `.value()` is a common bug; confirm whether you are dealing with legacy `Collection` or `Data_Value`.
 
-### The "new" vs "old" Pattern
-Files in `Data_Model/new/` represent active development with improved APIs:
-- `new/` contains current implementations (Data_Value, Base_Data_Value, specialized types like Data_String, Data_Integer)
-- `old/` contains legacy implementations (Data_Object, Collection) still used by main exports
-- Main files like `Data_Object.js` and `Data_Value.js` at Data_Model root are **thin wrappers** that `require()` from old/ or new/
+Integration Points & Dependencies
+- External: `lang-mini` and `fnl` are the primary runtime deps; keep dependency additions minimal to avoid downstream bundler issues.
+- Exports: `lang.js` wires exports into a `lang-mini` object; changing public APIs will affect `jsgui` or other downstream consumers.
 
-### Key Data Structures
-- **B_Plus_Tree** (`b-plus-tree/`) - self-balancing tree for sorted data
-- **Collection** (`Data_Model/old/Collection.js`) - array-like with indexing, constraints, relationships
-- **Doubly_Linked_List**, **Ordered_KVS**, **Sorted_KVS** - specialized collections
-- **collective** (`collective.js`) - Proxy-based utility for batch operations on arrays (e.g., `collective(arr).method()` calls method on all items)
+Considerations for lang-mini
+- This package is built on `lang-mini` and often implements higher-level or application-focused features that could belong in the platform layer. Before implementing a new core or cross-cutting feature inside `lang-tools`, consider whether it should live in `lang-mini` instead. Moving it upstream reduces duplication, improves platform consistency, and benefits all consumers.
+- Candidate features for `lang-mini`:
+	- Core evented utilities like `Evented_Class` extensions or patterns
+	- Validation primitives and improvements to `Functional_Data_Type`
+	- Polymorphic helpers (e.g., `more_general_equals`) that are generic
+	- Proxy-based helpers that should be platform-provided for broader reuse
+- If you think a feature belongs in `lang-mini`, prepare a cross-repo proposal (see `.github/lang-mini-proposal.md`) describing migration and API compatibility steps.
+	See also the step-by-step migration guide in `docs/workflows/lang-mini-proposals.md` for concrete steps and example code for cross-repo proposals.
 
-## Critical Concepts for AI Agents
+Testing & Debugging
+- Jest setup: `test/setup.js` adds custom matchers (e.g., `toBeDataValue`, `toBeImmutable`). Read it for testing primitives.
+- Legacy: Node/test harness under `test/test-all.js` references older `test_*.js` files—use `npm run test:legacy` when working with legacy tests.
+- For debugging, add small reproducible examples into `examples/` and run them directly.
 
-### 1. Data_Value Reactivity Model
-Data_Values are **reactive wrappers** with sophisticated behavior:
-```javascript
-// Typed data value with validation
-const dv = new Data_Value({value: 3, data_type: Functional_Data_Type.integer});
-dv.on('change', e => { /* react to changes */ });
-dv.value = 5; // Triggers change event if valid
+Quick References
+- Edit typed values: `Data_Model/new/*` (e.g., `Data_Value.js`, `Data_Integer.js`)
+- Edit collections: `Data_Model/old/Collection.js`
+- Helpers/utilities: `collective.js`, `util.js`, `b-plus-tree/*`
+- Tests: `test/*` (Jest), `test_*.js` (legacy node)
+- Bug list: `BUGS.md` (search for `<BUG###>`)
 
-// Syncing between data values (even different types)
-Data_Value.sync(dv1, dv2); // Bidirectional sync with automatic type conversion
-```
+- Migration plan: `docs/workflows/migrate-to-modern-data-model.md` — step-by-step guide for modernizing Data_Model and retiring old/ implementations
+- Bug Fix Playbook: `docs/workflows/bug-fix-playbook.md` — step-by-step bug fixes and agent checklists for critical/priority bugs
 
-**Key insight**: Data_Value handles:
-- Type validation via `Functional_Data_Type` from lang-mini
-- String parsing (e.g., "5" → 5 for numeric types)
-- Change events only when values actually differ (uses `more_general_equals`)
-- Immutable copies via `.toImmutable()` for state snapshots
+Fast on-ramp
+- `docs/agent-on-ramp.md` — step-by-step notes for the first 10/60 minutes
+- Agent PR Template: `docs/templates/agent-pr-template.md`
+- Migration proposals for `lang-mini`: `docs/workflows/lang-mini-proposals.md` and `.github/lang-mini-proposal.md`
+If something's unclear or a behavioral test fails, open a PR describing the change, link BUGS.md entries where applicable, and request a review from the maintainers.
 
-### 2. Context and ID Management
-Many objects require a `context` (Mini_Context) for ID generation:
-```javascript
-const dv = new Data_Value({value: 10, context: myContext});
-dv._id(); // Gets/generates unique ID via context
-```
-This pattern is **pervasive** - without context, ID-dependent features fail.
-
-### 3. Field Definition Pattern
-Data_Objects use field arrays for property setup:
-```javascript
-// fields: [[name, type, default_value], ...]
-const fields = [['width', 'number', 0], ['height', 'number', 0]];
-const obj = new Data_Object({}, fields);
-```
-However, `obext` fields (from lang-mini) are preferred for newer code.
-
-### 4. The "old" vs "set" Dilemma
-Legacy Data_Object uses `.get()` / `.set()` methods with complex polymorphism. **Modern code** should use direct property access:
-```javascript
-// Old style (still works but verbose)
-obj.set('width', 100);
-const w = obj.get('width');
-
-// Preferred (ES6 properties)
-obj.width = 100;
-const w = obj.width;
-```
-
-## Development Workflows
-
-### Running Tests
-```bash
-npm test              # Runs test/test-all.js
-node test/test-all.js # Aggregates all test_*.js files using node:test
-```
-Tests use Node's built-in `node:test` and `node:assert/strict`. See `test/test_data_value.js` for examples.
-
-### Examples Directory
-`examples/` contains runnable demonstrations:
-- `ex_data_value.js` - Comprehensive Data_Value features (type validation, syncing, mutability)
-- `ex_string_data_value.js` - String type specifics
-- Run with `node examples/ex_data_value.js`
-
-### Project Structure
-- **Root modules** (`lang.js`) export via `lang-mini` augmentation
-- **Dependencies**: `lang-mini` (platform), `fnl` (functional library)
-- No build process - direct Node.js execution
-
-## Coding Conventions
-
-### Module Pattern
-```javascript
-// Standard requires
-const {Evented_Class, each, tof} = require('lang-mini');
-
-// Class definition
-class MyClass extends Evented_Class {
-    constructor(spec = {}) {
-        super(spec);
-        // Setup...
-    }
-}
-
-module.exports = MyClass;
-```
-
-### Event Naming
-- `'change'` - primary event for value/property changes
-- `'validate'` - fired during validation attempts
-- Event objects include: `{name, old, value}` for changes
-
-### Type Checking
-Use `tof()` (type of) from lang-mini, NOT `typeof`:
-```javascript
-const t = tof(value); // Returns: 'string', 'number', 'array', 'data_value', 'data_object', etc.
-```
-
-### Signatures
-Functions often use `get_a_sig(arguments)` for polymorphic dispatch:
-```javascript
-const sig = get_a_sig(a, 1); // e.g., '[s]', '[n,n]', '[V,V]'
-```
-
-## Important Gotchas
-
-1. **Immutability is deep**: When creating `Immutable_Data_Value`, inner array items also become immutable
-2. **Change event suppression**: Setting identical values won't trigger change events (uses `more_general_equals`)
-3. **Proxy usage**: `collective.js` uses Proxy for dynamic property access - may have performance implications
-4. **Legacy code mixing**: Data_Object still has complex `.get()/.set()` - avoid extending those patterns
-5. **Context requirement**: Many classes fail silently or throw errors without proper `context` initialization
-
-## MVC/MVVM Context (from roadmap.md)
-This library is evolving toward an MVC framework where:
-- **Model** = Data_Model/Data_Object/Data_Value
-- **View** = (separate project, jsgui)
-- **Controller** = Control objects that use these data models
-
-Understanding this helps explain why Data_Value is so feature-rich - it's designed for UI binding with validation, syncing between view and model representations.
-
-## When Modifying Code
-
-- **Tests first**: Add test cases in `test/test_*.js` before implementing features
-- **Examples**: Update relevant examples/ files to demonstrate new features
-- **Backward compatibility**: Consider that `old/` implementations are still used - breaking changes need migration
-- **Documentation**: Complex features like Data_Value syncing deserve inline examples
-- **Type validation**: Use or extend `Functional_Data_Type` from lang-mini for new data types
-
-## Quick Reference: Key Files
-
-| File | Purpose |
-|------|---------|
-| `lang.js` | Main entry point, augments lang-mini with all exports |
-| `Data_Model/new/Data_Value.js` | Core reactive value class |
-| `Data_Model/old/Data_Object.js` | Legacy complex object system |
-| `collective.js` | Batch operation utility (Proxy-based) |
-| `util.js` | Vector math, type conversions, group operations |
-| `examples/ex_data_value.js` | Most comprehensive usage examples |
-| `test/test_data_value.js` | Test patterns and edge cases |
+- Before opening a PR
+- Capture the list-first commands for the suites you touched (`npx jest --runInBand --listTests`, targeted `--runTestsByPath`), then run `npm test` / focused executions
+- Run `npm run test:coverage` when changing public API or behavior
+- Update `BUGS.md` and `docs/`/`README.md` if you change behavior
+- Add or update unit tests for your fix/feature
+- Mention any breaking API changes and coordinate with downstream consumers (e.g., `jsgui`)

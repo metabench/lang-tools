@@ -1,5 +1,12 @@
 # AI Agent Instructions for lang-tools
 
+Fast on-ramp (first 5 minutes)
+- Read `README.md` for overall intent and `lang.js` for exports.
+- Search for active bug IDs: `grep -r "<BUG" .` and open `BUGS.md`.
+- Run a smoke test by first listing the targeted suite: `npx jest --runTestsByPath test/data_value.test.js --listTests` (shortcut: `npm run test:list -- test/data_value.test.js`). Only run `npx jest --runInBand --runTestsByPath test/data_value.test.js` if you truly need live output.
+ - Read `docs/agent-on-ramp.md` for a step-by-step onboarding checklist.
+ - Use `docs/templates/agent-pr-template.md` as the PR skeleton for agent-created PRs.
+
 This document provides instructions for AI agents working on the lang-tools codebase, particularly for bug fixing and feature development.
 
 ## Bug Tracking System
@@ -85,14 +92,15 @@ Or use your editor's search: Search for `<BUG001>` globally
 
 ### Step 5: Test the Fix
 ```bash
-# Run specific test file
-npm test -- test/data_value.test.js
+# Dry-run specific test file (no execution)
+npx jest --runTestsByPath test/data_value.test.js --listTests
 
-# Run all tests
+# Dry-run entire suite (also no execution)
+npx jest --runInBand --listTests
+
+# Once the selection looks correct, run the matching commands
+npx jest --runInBand --runTestsByPath test/data_value.test.js
 npm test
-
-# Check specific test that was failing
-npm test -- -t "should validate before setting value"
 ```
 
 ### Step 6: Update Documentation
@@ -212,19 +220,33 @@ tof(new Collection())  // 'collection'
 
 ## Testing Guidelines
 
-### Running Tests
+### Running Tests (list-first)
+```bash
+# Dry-run everything (no execution)
+npx jest --runInBand --listTests
+
+# Dry-run a specific file
+npx jest --runTestsByPath test/collection.test.js --listTests
+
+# Capture an auditable artifact
+node scripts/capture-list-tests.js docs/docs/reports/jest/list_tests/manual.collection.json -- --runTestsByPath test/collection.test.js
+
+# Shortcut via npm script
+npm run test:list -- test/collection.test.js
+```
+
+After the dry-run matches expectations, run the actual command. Avoid `npm run test:watch` in agent sessions because it never terminates on its own.
+
 ```bash
 # All tests
 npm test
 
 # Specific file
-npm test -- test/collection.test.js
+npx jest --runInBand --runTestsByPath test/collection.test.js
+npm run test:careful -- test/collection.test.js
 
-# Specific test
-npm test -- -t "should push numbers"
-
-# Watch mode
-npm run test:watch
+# Specific test name filter (combine with by-path when possible)
+npx jest --runInBand --runTestsByPath test/collection.test.js -t "should push numbers"
 
 # Coverage
 npm run test:coverage

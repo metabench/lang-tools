@@ -4,6 +4,9 @@ const {more_general_equals} = require('./tools');
 const Data_Model = require('../Data_Model');
 const Immutable_Data_Model = require('./Immutable_Data_Model');
 const Immutable_Base_Data_Value = require('./Immutable_Base_Data_Value');
+const throw_immutable_assignment = () => {
+    throw new TypeError('Cannot modify immutable Data_Value');
+};
 
 const {is_defined, input_processors, field, tof, each} = jsgui;
 
@@ -99,8 +102,8 @@ class Immutable_Data_Value extends Immutable_Base_Data_Value {
                 get() {
                     return local_js_value;
                     //return _prop_value;
-                }
-                // MISSING: set() { throw new TypeError('Cannot modify immutable Data_Value'); }
+                },
+                set: throw_immutable_assignment
             });
             
         } else {
@@ -125,8 +128,8 @@ class Immutable_Data_Value extends Immutable_Base_Data_Value {
             Object.defineProperty(this, 'value', {
                 get() {
                     return value
-                }
-                // MISSING: set() { throw new TypeError('Cannot modify immutable Data_Value'); }
+                },
+                set: throw_immutable_assignment
             })
             //field(this, 'value', spec.value);
         }

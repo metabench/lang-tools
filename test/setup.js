@@ -53,3 +53,20 @@ expect.extend({
 
 // Global test timeout
 jest.setTimeout(10000);
+
+const util = require('util');
+
+// Debugging: after all tests, print active handles, so we can see what prevents Node from exiting.
+afterAll(() => {
+  const handles = process._getActiveHandles();
+  if (handles && handles.length > 0) {
+    console.log('\nDEBUG: Active handles at end of tests:');
+    handles.forEach((h, i) => {
+      try {
+        console.log(`  Handle ${i}: type=${h.constructor && h.constructor.name}`, util.inspect(h, {depth: 1}));
+      } catch (e) {
+        console.log(`  Handle ${i}: (uninspectable)`);
+      }
+    });
+  }
+});

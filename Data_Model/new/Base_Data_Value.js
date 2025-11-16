@@ -66,7 +66,7 @@ class Base_Data_Value extends Data_Model {
         const {data_type, context} = this;
 
         
-        //setup_base_data_value_value_property(this);
+        setup_base_data_value_value_property(this);
 
 
         // Defining the property here could work....

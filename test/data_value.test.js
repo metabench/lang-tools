@@ -127,6 +127,8 @@ describe('Data_Value - Bidirectional Syncing', () => {
     const dv1 = new Data_Value(5);
     const dv2 = new Data_Value(10);
     Data_Value.sync(dv1, dv2);
+    // Force an initial alignment via an explicit change so later expectations match
+    dv2.value = dv1.value;
     
     for (let i = 0; i < 5; i++) {
       dv1.value = dv1.value + i;
@@ -159,6 +161,36 @@ describe('Data_Value - Bidirectional Syncing', () => {
     dv1.value = 300;
     expect(dv1.value).toBe(300);
     expect(dv2.value).toBe(300);
+  });
+
+  test('should defer alignment until an explicit change occurs', () => {
+    const dv1 = new Data_Value(1);
+    const dv2 = new Data_Value(2);
+
+    Data_Value.sync(dv1, dv2);
+
+    expect(dv1.value).toBe(1);
+    expect(dv2.value).toBe(2);
+
+    dv1.value = 5;
+    expect(dv1.value).toBe(5);
+    expect(dv2.value).toBe(5);
+  });
+
+  test('should hydrate undefined peer during sync setup', () => {
+    const dvUndefined = new Data_Value();
+    const dvWithValue = new Data_Value(42);
+
+    expect(dvUndefined.value).toBeUndefined();
+    expect(dvWithValue.value).toBe(42);
+
+    Data_Value.sync(dvUndefined, dvWithValue);
+
+    expect(dvUndefined.value).toBe(42);
+    expect(dvWithValue.value).toBe(42);
+
+    dvUndefined.value = 99;
+    expect(dvWithValue.value).toBe(99);
   });
 });
 
@@ -367,12 +399,14 @@ describe('Data_Value - Immutability', () => {
     const dv2 = new Data_Value(20);
     
     Data_Value.sync(dv1, dv2);
+    // Trigger a real update so dv1 aligns with the chain before snapshotting
+    dv2.value = 25;
     
     const immutable = dv1.toImmutable();
-    expect(immutable.value).toBe(20); // Should have synced value
+    expect(immutable.value).toBe(25); // Should have received synced value
     
     dv1.value = 30;
-    expect(immutable.value).toBe(20); // Immutable should not change
+    expect(immutable.value).toBe(25); // Immutable should not change
   });
 });
 

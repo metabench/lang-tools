@@ -45,19 +45,24 @@ var input_processors = jsgui.input_processors;
 
 
 
+const is_plain_object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+
 class Data_Value extends Data_Model {
 
 
     constructor(spec = {}) {
-        super(spec);
+        const actual_spec = is_plain_object(spec) ? spec : {value: spec};
+        super(actual_spec);
         this.__data_value = true;
         //console.log('old (1.1) Data_Value constructor');
 
-        if (spec.context) {
-            this.context = spec.context;
+        if (actual_spec.context) {
+            this.context = actual_spec.context;
         }
-        if (is_defined(spec.value)) {
-            this._ = spec.value;
+        if (is_defined(actual_spec.value)) {
+            this._ = actual_spec.value;
+        } else {
+            this._ = undefined;
         }
         // Maybe don't use __type.
         //   instanceOf, maybe typeOf ....

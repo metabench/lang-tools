@@ -124,6 +124,7 @@ class Data_Object extends Data_Model {
     constructor(spec = {}, fields) {
         //console.log('1* spec.__type_name', spec.__type_name);
         super(spec);
+        this._ = this._ || {};
         if (spec.id) {
 			this.__id = spec.id;
 		}
@@ -755,7 +756,7 @@ class Data_Object extends Data_Model {
                             }
                         }
                         //this._[property_name] = dv;
-                        this[property_name] = dv;
+                        this._[property_name] = dv;
 
                         if (!silent) {
                             e_change = {
@@ -775,14 +776,14 @@ class Data_Object extends Data_Model {
                             //this.set
                             // but maybe that object should be wrapped in Data_Object?
                             //this._[property_name] = value;
-                            this[property_name] = value;
+                            this._[property_name] = value;
                             res = value;
                         } else {
                             //console.log('not is_js_native');
                             //var res = data_object_next.set(value);
                             res = data_object_next;
                             //this._[property_name] = data_object_next;
-                            this[property_name] = data_object_next;
+                            this._[property_name] = data_object_next;
                         }
 
 

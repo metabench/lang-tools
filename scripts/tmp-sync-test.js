@@ -1,0 +1,10 @@
+const Data_Value = require('../Data_Model/Data_Value');
+const dv1 = new Data_Value(1);
+const dv2 = new Data_Value(2);
+const dv3 = new Data_Value(3);
+const dv4 = new Data_Value(4);
+Data_Value.sync(dv1, dv2);
+Data_Value.sync(dv3, dv4);
+console.log('after setup', dv1.value, dv2.value, dv3.value, dv4.value);
+dv1.value = 10;
+console.log('after dv1=10', dv1.value, dv2.value, dv3.value, dv4.value);

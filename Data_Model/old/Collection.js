@@ -607,6 +607,20 @@ class Collection extends Data_Object {
             }
 
             
+        } else if (tv === 'data_value') {
+            pos = this._arr.length;
+            this._arr.push(value);
+            this._arr_idx++;
+            if (!silent) {
+                const e = {
+                    'target': this,
+                    'item': value,
+                    'value': value,
+                    'position': pos,
+                    'name': 'insert'
+                }
+                this.raise('change', e);
+            }
         } else if (tv === 'collection') {
             pos = this._arr.length;
             this._arr.push(value);

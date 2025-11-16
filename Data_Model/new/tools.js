@@ -2,119 +2,55 @@ const Data_Model = require('../Data_Model');
 const {tof} = require('lang-mini');
 
 const more_general_equals = (that, other) => {
+    const t_that = tof(that), t_other = tof(other);
 
-    if (other instanceof Data_Model) {
-        // Compare the values???
+    if (t_that !== t_other) return false;
 
-        // For the moment, get them as JSON....
-
-        // Though it looks like getting the values as JSON is not working properly in some cases.
-
-        
-
-        const my_json = that.toJSON();
-        const other_json = other.toJSON();
-
-
-
-        //console.log('[my_json, other_json]', [my_json, other_json]);
-
-        //console.trace();
-        //throw 'stop';
-
-        return my_json === other_json;
-
-    } else {
-        // what type is being stored in this????
-
-        // look at .value????
-        //   or the unwrapped value....?
-
-        // Does it have a .value????
-
-        //console.log('[that, other]', [that, other]);
-
-        if (that === other) {
-            return true;
-        } else {
-
-            if (that === undefined) {
-                return false;
-            } else {
-                const {value} = that;
-
-                const t_value = tof(value), t_other = tof(other);
-
-                //console.log('[t_value, t_other]', [t_value, t_other]);
-                //console.log('*** [value, other]', [value, other]);
-
-                if (t_value === t_other) {
-                    //console.log('*** [value, other]', [value, other]);
-
-                    if (value === other) {
-                        return true;
-                    } else {
-                        if (typeof value.equals === 'function' && typeof other.equals === 'function') {
-                            return value.equals(other);
-                        } else {
-
-                            if (value === other) {
-                                return true;
-                            } else {
-
-                                if (t_value === 'number' || t_value === 'string' || t_value === 'boolean') {
-                                    return value === other;
-                                } else {
-
-                                    if (t_value === 'array') {
-                                        // or tostring / tojson???
-
-                                        if (value.length === other.length) {
-                                            // compare each of them....
-
-                                            let res = true, c = 0, l = value.length;
-
-                                            do {
-                                                res = more_general_equals(value[c], other[c]);
-                                                c++;
-                                            } while (res === true && c < l)
-                                            return res;
-
-                                        } else {
-                                            return false;
-                                        }
-
-                                    } else {
-                                        console.log('[value, other]', [value, other]);
-                                        console.trace();
-                                        throw 'NYI';
-
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-
-                    
-                } else {
-                    // But number parsing etc....
-                    return false;
-                }
-
-
-            }
-        }
-
-
-
-
-        
+    // Handle primitives and simple cases first
+    if (t_that === 'number' || t_that === 'string' || t_that === 'boolean' || t_that === 'undefined' || t_that === 'null') {
+        return Object.is(that, other);
     }
-}
+
+    // Arrays: deep compare
+    if (t_that === 'array') {
+        if (!Array.isArray(other) || that.length !== other.length) return false;
+        for (let i = 0; i < that.length; i++) {
+            if (!more_general_equals(that[i], other[i])) return false;
+        }
+        return true;
+    }
+
+    // Data_Model instances: compare via toJSON to avoid possible equals recursion
+    if (that instanceof Data_Model && other instanceof Data_Model) {
+        if (typeof that.toJSON === 'function' && typeof other.toJSON === 'function') {
+            return that.toJSON() === other.toJSON();
+        }
+        // Fall back to shallow equality
+        if (that === other) return true;
+        return false;
+    }
+
+    // If `that` has a `value` property (eg Data_Value wrapper), compare inner value
+    if (t_that === 'object' && 'value' in that) {
+        return more_general_equals(that.value, other);
+    }
+
+    // Generic object deep-compare (shallow keys)
+    if (t_that === 'object') {
+        const keysA = Object.keys(that);
+        const keysB = Object.keys(other);
+        if (keysA.length !== keysB.length) return false;
+        for (const k of keysA) {
+            if (!Object.prototype.hasOwnProperty.call(other, k)) return false;
+            if (!more_general_equals(that[k], other[k])) return false;
+        }
+        return true;
+    }
+
+    // Fallback
+    return Object.is(that, other);
+};
 
 module.exports = {
     more_general_equals
-
-
-}
+};
