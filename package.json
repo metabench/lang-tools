@@ -7,7 +7,11 @@
         "lang-mini": "^0.0.46"
     },
     "devDependencies": {
-        "jest": "^30.2.0"
+        "express": "^5.2.1",
+        "jest": "^30.2.0",
+        "jsgui3-client": "^0.0.121",
+        "jsgui3-html": "^0.0.170",
+        "markdown-it": "^14.1.0"
     },
     "scripts": {
         "start": "node ./lang",
@@ -18,7 +22,8 @@
         "test:careful": "node scripts/jest_careful_runner.mjs",
         "test:list": "node scripts/jest_careful_runner.mjs --list-only",
         "test:data_value": "node scripts/jest_careful_runner.mjs test/data_value.test.js",
-        "test:data_value:json": "jest --runInBand --runTestsByPath test/data_value.test.js --json --outputFile tmp-data-value.json"
+        "test:data_value:json": "jest --runInBand --runTestsByPath test/data_value.test.js --json --outputFile tmp-data-value.json",
+        "docs:browser": "node apps/docs-browser/server.js"
     },
     "comments": [
         "Should possibly have the more comprehensive lang tools for plugging into jsgui and doing advanced coding."
@@ -32,5 +37,5 @@
         "type": "git",
         "url": "https://github.com/metabench/lang-tools.git"
     },
-    "version": "0.0.41"
+    "version": "0.0.42"
 }

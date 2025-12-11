@@ -46,14 +46,14 @@ describe('Collection - Push Operations', () => {
     const coll = new Collection();
     coll.push('Item1');
     const item = coll.get(0);
-    expect(item.value()).toBe('Item1');
+    expect(item.value).toBe('Item1');
   });
 
   test('should push numbers', () => {
     const coll = new Collection();
     coll.push(42);
     expect(coll.length()).toBe(1);
-    expect(coll.get(0).value()).toBe(42);
+    expect(coll.get(0).value).toBe(42);
   });
 
   test('should push objects', () => {
@@ -78,15 +78,15 @@ describe('Collection - Push Operations', () => {
 describe('Collection - Get Operations', () => {
   test('should get item by index', () => {
     const coll = new Collection(['A', 'B', 'C']);
-    expect(coll.get(0).value()).toBe('A');
-    expect(coll.get(1).value()).toBe('B');
-    expect(coll.get(2).value()).toBe('C');
+    expect(coll.get(0).value).toBe('A');
+    expect(coll.get(1).value).toBe('B');
+    expect(coll.get(2).value).toBe('C');
   });
 
   test('should get items with different types', () => {
     const coll = new Collection([10, 'text', {key: 'value'}]);
-    expect(coll.get(0).value()).toBe(10);
-    expect(coll.get(1).value()).toBe('text');
+    expect(coll.get(0).value).toBe(10);
+    expect(coll.get(1).value).toBe('text');
     expect(coll.get(2)).toEqual({key: 'value'}); // Objects not wrapped
   });
 
@@ -100,7 +100,7 @@ describe('Collection - Get Operations', () => {
     const coll = new Collection(['A', 'B', 'C']);
     const item = coll.get(-1);
     // Behavior depends on implementation
-    expect(item === undefined || item.value() !== undefined).toBe(true);
+    expect(item === undefined || item.value !== undefined).toBe(true);
   });
 });
 
@@ -130,8 +130,14 @@ describe('Collection - Each/Iteration Operations', () => {
     const values = [];
     coll.each((item, key) => {
       count++;
-      // Primitives are wrapped, objects/arrays are not
-      values.push(typeof item.value === 'function' ? item.value() : item);
+      // Primitives are wrapped in Data_Value (property), arrays become Collection (method)
+      if (item && typeof item.value === 'function') {
+        values.push(item.value()); // Collection.value() method
+      } else if (item && typeof item.value !== 'undefined') {
+        values.push(item.value); // Data_Value.value property
+      } else {
+        values.push(item);
+      }
     });
     expect(count).toBe(4);
     expect(values[0]).toBe(10);
@@ -173,7 +179,7 @@ describe('Collection - Insert Operations', () => {
     const coll = new Collection(['B', 'C']);
     coll.insert('A', 0);
     expect(coll.get(0)).toBe('A'); // insert doesn't wrap
-    expect(coll.get(1).value()).toBe('B'); // push did wrap
+    expect(coll.get(1).value).toBe('B'); // push did wrap
   });
 
   test('should insert at end', () => {
@@ -186,8 +192,8 @@ describe('Collection - Insert Operations', () => {
     const coll = new Collection([1, 2, 3]);
     coll.insert(99, 1);
     expect(coll.get(1)).toBe(99); // insert doesn't wrap
-    expect(coll.get(2).value()).toBe(2); // push wrapped
-    expect(coll.get(3).value()).toBe(3); // push wrapped
+    expect(coll.get(2).value).toBe(2); // push wrapped
+    expect(coll.get(3).value).toBe(3); // push wrapped
   });
 
   test('should insert different types', () => {
@@ -205,23 +211,23 @@ describe('Collection - Remove Operations', () => {
     const coll = new Collection(['A', 'B', 'C']);
     coll.remove(1);
     expect(coll.length()).toBe(2);
-    expect(coll.get(0).value()).toBe('A');
-    expect(coll.get(1).value()).toBe('C');
+    expect(coll.get(0).value).toBe('A');
+    expect(coll.get(1).value).toBe('C');
   });
 
   test('should remove first item', () => {
     const coll = new Collection([1, 2, 3]);
     coll.remove(0);
     expect(coll.length()).toBe(2);
-    expect(coll.get(0).value()).toBe(2);
+    expect(coll.get(0).value).toBe(2);
   });
 
   test('should remove last item', () => {
     const coll = new Collection([1, 2, 3]);
     coll.remove(2);
     expect(coll.length()).toBe(2);
-    expect(coll.get(0).value()).toBe(1);
-    expect(coll.get(1).value()).toBe(2);
+    expect(coll.get(0).value).toBe(1);
+    expect(coll.get(1).value).toBe(2);
   });
 
   test('should handle remove from single-item collection', () => {
@@ -259,7 +265,7 @@ describe('Collection - Clear Operations', () => {
     coll.clear();
     coll.push('New');
     expect(coll.length()).toBe(1);
-    expect(coll.get(0).value()).toBe('New');
+    expect(coll.get(0).value).toBe('New');
   });
 
   test('should clear empty collection without error', () => {
@@ -305,22 +311,22 @@ describe('Collection - Set Operations', () => {
     const coll = new Collection(['A', 'B']);
     coll.set([1, 2, 3]);
     expect(coll.length()).toBe(3);
-    expect(coll.get(0).value()).toBe(1);
+    expect(coll.get(0).value).toBe(1);
   });
 
   test('should clear and repopulate on set', () => {
     const coll = new Collection([1, 2, 3, 4, 5]);
     coll.set(['X', 'Y']);
     expect(coll.length()).toBe(2);
-    expect(coll.get(0).value()).toBe('X');
-    expect(coll.get(1).value()).toBe('Y');
+    expect(coll.get(0).value).toBe('X');
+    expect(coll.get(1).value).toBe('Y');
   });
 
   test('should set with single value', () => {
     const coll = new Collection([1, 2, 3]);
     coll.set('Single');
     expect(coll.length()).toBe(1);
-    expect(coll.get(0).value()).toBe('Single');
+    expect(coll.get(0).value).toBe('Single');
   });
 });
 
@@ -338,11 +344,11 @@ describe('Collection - Indexing', () => {
   });
 
   // Fixed <TEST004>: Custom index function receives raw value before wrapping
-  // For primitives like strings, there is no .value() method yet
+  // For primitives like strings, there is no .value property yet
   test('should handle custom index function', () => {
     const fn_index = (item) => {
-      // Check if item has a .value() method (is already wrapped)
-      return (typeof item.value === 'function') ? item.value() : item;
+      // Check if item has a .value property (is already wrapped)
+      return (item && typeof item.value !== 'undefined') ? item.value : item;
     };
     const coll = new Collection({fn_index});
     coll.push('Test');
@@ -435,7 +441,7 @@ describe('Collection - Edge Cases', () => {
     const coll = new Collection([true, false]);
     // BUG: Collection currently filters out booleans - should accept them
     expect(coll.length()).toBe(2);
-    expect(coll.get(0).value()).toBe(true);
-    expect(coll.get(1).value()).toBe(false);
+    expect(coll.get(0).value).toBe(true);
+    expect(coll.get(1).value).toBe(false);
   });
 });

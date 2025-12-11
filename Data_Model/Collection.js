@@ -1,1 +1,1 @@
-module.exports = require('./old/Collection');
+module.exports = require('./new/Collection');

@@ -32,7 +32,7 @@ describe('New Data_Object - Modern behavior', () => {
   });
 
   test('remove_from parent and position_within', () => {
-    const Collection = require('../Data_Model/old/Collection');
+    const Collection = require('../Data_Model/new/Collection');
     const parent = new Collection([1, 2, 3]);
     const obj = new NewDataObject();
     obj.set('x', 42);

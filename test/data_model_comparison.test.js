@@ -2,7 +2,7 @@ const OldDataValue = require('../Data_Model/old/Data_Value');
 const NewDataValue = require('../Data_Model/new/Data_Value');
 const OldDataObject = require('../Data_Model/old/Data_Object');
 const NewDataObject = require('../Data_Model/new/Data_Object');
-const OldCollection = require('../Data_Model/old/Collection');
+const Collection = require('../Data_Model/new/Collection');
 
 describe('Old vs New Data_Model behavior comparison', () => {
   test('Data_Value: property vs method API', () => {
@@ -35,12 +35,12 @@ describe('Old vs New Data_Model behavior comparison', () => {
     }
   });
 
-  test('Collection still wraps primitives using old Data_Value API', () => {
-    const coll = new OldCollection();
+  test('Collection now wraps primitives using new Data_Value API', () => {
+    const coll = new Collection();
     coll.push('hi');
     const item = coll.get(0);
-    // Old Collections wrap primitives using the old Data_Value implementations
-    expect(typeof item.value).toBe('function');
-    expect(item.value()).toBe('hi');
+    // Collection now uses new Data_Value with property-based access
+    expect(typeof item.value).not.toBe('function');
+    expect(item.value).toBe('hi');
   });
 });

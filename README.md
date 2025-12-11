@@ -849,10 +849,10 @@ test/
 ```
 lang-tools/
 ├── Data_Model/           # Core reactive data model system
-│   ├── new/             # Active development (Data_Value, specialized types)
-│   ├── old/             # Legacy implementations (Data_Object, Collection)
+│   ├── new/             # Active development (Data_Value, Data_Object, specialized types)
+│   ├── old/             # Legacy implementations (Data_Object, Data_Value, Collection)
 │   ├── Data_Model.js    # Base class
-│   ├── Data_Object.js   # Thin wrapper → old/Data_Object.js
+│   ├── Data_Object.js   # Thin wrapper → new/Data_Object.js
 │   ├── Data_Value.js    # Thin wrapper → new/Data_Value.js
 │   └── Collection.js    # Thin wrapper → old/Collection.js
 ├── b-plus-tree/         # B+ tree implementation
@@ -866,9 +866,9 @@ lang-tools/
 
 ### The "new" vs "old" Pattern
 
-- **`new/`** - Modern implementations with improved APIs (Data_Value, Data_Integer, Data_String)
-- **`old/`** - Legacy implementations still used by main exports (Data_Object, Collection)
-- Root files are thin wrappers that require from `new/` or `old/`
+- **`new/`** - Modern implementations with improved APIs (Data_Value, Data_Object, Data_Integer, Data_String)
+- **`old/`** - Legacy implementations kept for compatibility (Collection still points here; legacy Data_Object/Data_Value remain available)
+- Root files are thin wrappers that require from `new/` or `old/` (Data_Object/Data_Value default to the modern versions)
 
 ### Data Model Hierarchy
 
@@ -879,8 +879,8 @@ Evented_Class (from lang-mini)
         │   ├── Data_Integer
         │   └── Data_String
         ├── Immutable_Data_Value
-        └── Data_Object (old/)
-            └── Collection
+        └── Data_Object (new/)
+            └── Collection (legacy default)
 ```
 
 ### Key Concepts

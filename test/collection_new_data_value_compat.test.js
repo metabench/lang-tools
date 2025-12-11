@@ -1,4 +1,4 @@
-const Collection = require('../Data_Model/old/Collection');
+const Collection = require('../Data_Model/new/Collection');
 const NewDataValue = require('../Data_Model/new/Data_Value');
 
 describe('Collection compatibility with new Data_Value', () => {
