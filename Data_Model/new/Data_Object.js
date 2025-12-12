@@ -624,6 +624,24 @@ class Data_Object extends Data_Model {
         }
     }
 
+    'ensure_data_value'(property_name, default_value) {
+        if (this._abstract) return undefined;
+        if (!property_name || typeof property_name !== 'string') throw 'property_name expected: string';
+        if (property_name.indexOf('.') > -1 && property_name !== '.') throw 'ensure_data_value does not support dotted paths (yet)';
+
+        const has_key = this._ && Object.prototype.hasOwnProperty.call(this._, property_name);
+        const existing = has_key ? this._[property_name] : undefined;
+
+        if (existing && existing.__data_value) return existing;
+
+        const initial_value = has_key ? existing : default_value;
+        const dv = new Data_Value({
+            value: initial_value
+        });
+        this._[property_name] = dv;
+        return dv;
+    }
+
     // Or don't use / support get and set for the moment?
     //   Only use property / field access?
     //   Define property, with getter and setter, seems like a more cleanly defined system.
@@ -689,9 +707,14 @@ class Data_Object extends Data_Model {
                     if (data_object_next) {
                         res = data_object_next.set(spn_arr_next.join('.'), value);
                         if (!silent) {
+                            const bubbled_stored = this.get(property_name);
                             var e_change = {
                                 'name': property_name,
+                                // Back-compat: bubbled events historically provided the input value.
                                 'value': value,
+                                // MVVM-friendly additions:
+                                'data_value': (bubbled_stored && bubbled_stored.__data_value) ? bubbled_stored : undefined,
+                                'raw_value': (bubbled_stored && bubbled_stored.__data_value) ? bubbled_stored.value : ((bubbled_stored && typeof bubbled_stored.value === 'function') ? bubbled_stored.value() : value),
                                 'bubbled': true
                             };
                             if (source) {
@@ -705,102 +728,59 @@ class Data_Object extends Data_Model {
                 } else {
                     var data_object_next = this.get(property_name);
                     //console.log('data_object_next', data_object_next);
-                    if (data_object_next) {
-                        //console.log('property_name', property_name);
-                        //var field = this.field(property_name);
-                        var field = this[property_name];
-                        //console.log('field', field);
-                        if (field) {
+                    const had_existing = is_defined(data_object_next) && data_object_next !== null;
+                    const incoming_is_node = value && (value.__data_object || value.__data_value || value.__data_grid);
+                    const existing_is_data_value = data_object_next && data_object_next.__data_value;
+                    const existing_is_data_object = data_object_next && data_object_next.__data_object;
+                    const incoming_t = tof(value);
 
-                            data_object_next.__type_name = field[1] || data_object_next.__type_name;
-                        }
-                        //console.log('property_name', property_name);
-                        //console.log('value', value);
+                    let stored;
+
+                    if (existing_is_data_value) {
                         data_object_next.set(value);
-                        //console.log('3) data_object_next', data_object_next);
-                    }
-                    if (!is_defined(data_object_next)) {
-                        var tv = typeof value;
-                        var dv;
-                        //console.log('property_name', property_name);
-                        //console.log('tv ' + tv);
-                        // And for an array?
-                        if (tv === 'string' || tv === 'number' || tv === 'boolean' || tv === 'date') {
-                            dv = new Data_Value({
-                                'value': value
-                            });
-                        } else {
-                            // And could make an array into a collection.
-                            //  That seems like the most logical internal way of doing things.
-                            //  An option to have them as arrays would make sense for performance (or typed arrays),
-                            //   but a Collection makes the most sense logically.
-
-                            if (tv === 'array') {
-                                dv = new Data_Value({
-                                    'value': value
-                                });
-                            } else {
-                                if (tv === 'object') {
-                                    if (value.__data_object || value.__data_value || value.__data_grid) {
-                                        dv = value;
-                                    } else {
-                                        dv = new Data_Value({
-                                            'value': value
-                                        });
-                                    }
-                                } else {
-                                    //console.log('tv', tv);
-                                    dv = value;
-                                }
-                                //dv = value;
-                            }
-                        }
-                        //this._[property_name] = dv;
-                        this._[property_name] = dv;
-
-                        if (!silent) {
-                            e_change = {
-                                'name': property_name,
-                                'value': dv
-                            };
-                            if (source) {
-                                e_change.source = source;
-                            }
-                            this.raise_event('change', e_change);
-                        }
-                        return value;
+                        stored = data_object_next;
+                        res = data_object_next;
+                    } else if (existing_is_data_object && incoming_t === 'object' && value !== null && !incoming_is_node && incoming_t !== 'array') {
+                        // Preserve nested Data_Object identity for MVVM bindings.
+                        data_object_next.set(value);
+                        stored = data_object_next;
+                        res = data_object_next;
                     } else {
-                        var next_is_js_native = is_js_native(data_object_next);
-                        if (next_is_js_native) {
-                            //console.log('is_js_native');
-                            //this.set
-                            // but maybe that object should be wrapped in Data_Object?
-                            //this._[property_name] = value;
-                            this._[property_name] = value;
-                            res = value;
+                        if (incoming_is_node) {
+                            stored = value;
                         } else {
-                            //console.log('not is_js_native');
-                            //var res = data_object_next.set(value);
-                            res = data_object_next;
-                            //this._[property_name] = data_object_next;
-                            this._[property_name] = data_object_next;
-                        }
-
-
-                        if (!silent) {
-                            var e_change = {
-                                'name': property_name,
-                                'value': data_object_next.value()
-                            };
-                            if (source) {
-                                e_change.source = source;
+                            // Back-compat: only wrap when creating a new key (or when key is currently null/undefined).
+                            // For existing js-native values, keep storing the raw value to avoid breaking callers that expect primitives.
+                            if (!had_existing) {
+                                stored = this.ensure_data_value(property_name);
+                                stored.set(value);
+                            } else {
+                                stored = value;
                             }
-                            this.trigger('change', e_change);
                         }
-                        // want to listen to the set event for some things such as GUI components in particular.
-
-                        return res;
+                        this._[property_name] = stored;
+                        res = stored;
                     }
+
+                    if (!silent) {
+                        var e_change = {
+                            'name': property_name,
+                            // Back-compat: historically sometimes emitted Data_Value (when creating) and sometimes raw JS value (when updating).
+                            'value': (!had_existing) ? stored : ((stored && stored.__data_value) ? stored.value : ((stored && typeof stored.value === 'function') ? stored.value() : stored)),
+                            // MVVM-friendly additions:
+                            'data_value': (stored && stored.__data_value) ? stored : undefined,
+                            'raw_value': (stored && stored.__data_value) ? stored.value : ((stored && typeof stored.value === 'function') ? stored.value() : stored)
+                        };
+                        if (source) {
+                            e_change.source = source;
+                        }
+                        this.raise_event('change', e_change);
+                    }
+
+                    // Back-compat return values:
+                    // - When creating a new key, historically returned the input value.
+                    // - When updating, historically returned the stored object (or primitive).
+                    return had_existing ? res : value;
                 }
             }
         } else {

@@ -1,5 +1,5 @@
 Status: WIP
-Last-Updated: 2025-12-11
+Last-Updated: 2025-12-12
 Owner: @unassigned
 
 # lang-tools Full Stack Documentation
@@ -485,6 +485,8 @@ console.log(num.value); // 75 (if num has number type)
 
 ## Data_Object - Reactive Objects
 
+See also: [docs/content/mvvm-patterns-research.md](docs/content/mvvm-patterns-research.md)
+
 ### Class Structure
 
 **File:** `Data_Model/new/Data_Object.js`
@@ -509,6 +511,7 @@ class Data_Object extends Data_Model {
 |-----------------|------|-------------|
 | `.get(key)` | method | Get field value (returns Data_Value) |
 | `.set(key, val)` | method | Set field value |
+| `.ensure_data_value(key, default?)` | method | Ensure a stable Data_Value node exists for MVVM-style bindings |
 | `.has(key)` | method | Check if field exists |
 | `.keys()` | method | Get all field names |
 | `.each(fn)` | method | Iterate over fields |
@@ -529,6 +532,13 @@ obj.set('age', 30);
 const nameField = obj.get('name');
 console.log(nameField.value);  // 'Alice'
 
+// MVVM pattern: bind to a stable node
+const nameNode = obj.ensure_data_value('name');
+nameNode.on('change', (e) => {
+    // React to value changes without swapping the node reference
+    console.log('name changed:', nameNode.value);
+});
+
 // Deep access
 obj.set('user.profile.name', 'Bob');
 const name = obj.get('user.profile.name');
@@ -546,7 +556,11 @@ const obj = new Data_Object();
 
 obj.on('change', (event) => {
     console.log('Field changed:', event.name);
-    console.log('New value:', event.value);
+    // Back-compat note: historically `event.value` has sometimes been a Data_Value (on create)
+    // and sometimes the raw JS value (on update). Use the MVVM-friendly fields below.
+    console.log('Value (legacy/mixed):', event.value);
+    console.log('Raw JS value:', event.raw_value);
+    console.log('Data_Value node:', event.data_value); // Data_Value (when applicable)
 });
 
 obj.set('status', 'active');  // Triggers change event
