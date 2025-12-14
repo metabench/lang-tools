@@ -245,13 +245,11 @@ class Data_Value extends Base_Data_Value {
         if (this.__id) return this.__id;
         if (this.context) {
             this.__id = this.context.new_id(this.__type_name || this.__type);
-        } else {
-            if (!is_defined(this.__id)) {
-                throw 'Data_Value should have context';
-                this.__id = new_data_value_id();
-            }
+            return this.__id;
         }
-        return this.__id;
+        // Return undefined when no context - don't throw
+        // This allows Data_Value instances to exist without a context
+        return undefined;
     }
 };
 

@@ -142,7 +142,7 @@ class Collection extends Data_Object {
     // maybe use fp, and otherwise apply with the same params and context.
     'set' (value) {
         var tval = tof(value);
-        if (tval === 'data_object' || tval === 'data_value') {
+        if (tval === 'data_object' || tval === 'data_value' || tval === 'data_model') {
             this.clear();
             return this.push(value);
         } else if (tval === 'array') {
@@ -637,7 +637,9 @@ class Collection extends Data_Object {
                 this.raise('change', e);
             }
 
-        } else if (tv === 'data_object' || tv === 'control') {
+        } else if (tv === 'data_object' || tv === 'control' || tv === 'data_model') {
+            // Note: 'data_model' is included because tof() may return 'data_model' for
+            // Data_Object instances in some inheritance scenarios
             pos = this._arr.length;
             // Should not need a context or ID just to be put in place.
             this._arr.push(value);
@@ -728,5 +730,6 @@ class Collection extends Data_Object {
 };
 
 var p = Collection.prototype;
-p.add = p.push;
+// Use a proper method instead of alias to allow proper monkey-patching/wrapping
+p.add = function(value) { return this.push(value); };
 module.exports = Collection;

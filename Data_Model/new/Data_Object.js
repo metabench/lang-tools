@@ -195,9 +195,8 @@ class Data_Object extends Data_Model {
             var t_spec = tof(spec);
             //console.log('t_spec', t_spec);
 
-            if (!this.__type) {
-                this.__type = 'data_object';
-            }
+            // Always set __type to 'data_object' - override parent's 'data_model'
+            this.__type = 'data_object';
 
             // 18/12/2016 getting rid of ._
 
@@ -272,6 +271,24 @@ class Data_Object extends Data_Model {
                 this.init_default_events();
             }
 
+            // Hydrate spec properties into internal storage
+            // Reserved keys that should not be hydrated as data properties
+            const reserved_keys = {
+                'context': true, 'id': true, '_id': true, '__id': true,
+                'parent': true, '__type': true, '__type_name': true,
+                'abstract': true, 'data_def': true, 'load_array': true,
+                'items': true, 'fn_index': true, 'constraint': true,
+                'index_by': true, 'accepts': true
+            };
+
+            if (t_spec === 'object' && spec) {
+                Object.keys(spec).forEach(key => {
+                    // Skip reserved keys and private keys starting with __
+                    if (reserved_keys[key] || key.startsWith('__')) return;
+                    this.set(key, spec[key], true);
+                });
+            }
+
             //this._initializing = false;
         }
         //console.log('end Data_Object init');
@@ -280,35 +297,48 @@ class Data_Object extends Data_Model {
 
 
     'set_fields_from_spec'(fields, spec) {
+        // Normalize fields: accept array of [name, type, default] tuples or object form
+        const normalized = [];
+        if (Array.isArray(fields)) {
+            each(fields, field => {
+                if (Array.isArray(field)) {
+                    normalized.push(field);
+                } else if (typeof field === 'object' && field.name) {
+                    normalized.push([field.name, field.type, field.default]);
+                }
+            });
+        } else if (typeof fields === 'object') {
+            each(fields, (val, key) => {
+                if (Array.isArray(val)) {
+                    normalized.push([key, val[0], val[1]]);
+                } else {
+                    normalized.push([key, val]);
+                }
+            });
+        }
 
-        // Definitely looks like it's worth depricating this, and using a more advanced type of field, using the field function from
-        //  lang-mini (new in late 2023 to lang-mini)
+        // Process each field
+        each(normalized, field => {
+            const field_name = field[0];
+            const field_default = field[2];
 
-        // obext fields don't work like this.
-        //   Should do more to support obext fields, powerful functionality that raises change events.
-
-        // .field.on('change') ???
-
-        // So model.background.color would be a field (somehow???)
-        //   Make some advances on this level, and then integrate it into an app.
-
-        console.trace();
-        throw 'Deprecating in new Data_Object version for now.'
-
-
-
-
-
-
-        //let that = this;
-        each(fields, field => {
-            if (typeof spec[field[0]] !== 'undefined') {
-                this[field[0]] = spec[field[0]];
-            } else {
-                this[field[0]] = field[2];
+            // Determine value: spec value takes precedence, then default
+            let value_to_set;
+            if (spec && typeof spec[field_name] !== 'undefined') {
+                value_to_set = spec[field_name];
+            } else if (typeof field_default !== 'undefined') {
+                value_to_set = field_default;
             }
 
-        })
+            // Set the value if we have one
+            if (typeof value_to_set !== 'undefined') {
+                if (typeof this.set === 'function') {
+                    this.set(field_name, value_to_set, true);
+                } else {
+                    this._[field_name] = value_to_set;
+                }
+            }
+        });
     }
 
     'init_default_events'() {

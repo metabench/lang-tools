@@ -5,7 +5,10 @@
       "Bash(wc:*)",
       "Bash(npm test:*)",
       "Bash(grep:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []
