@@ -367,3 +367,66 @@ describe('Util - Edge Cases', () => {
     }).not.toThrow();
   });
 });
+
+describe('Util - Path Helpers', () => {
+  test('should read nested values using path_get', () => {
+    const target = { a: { b: { c: 3 } } };
+    expect(util.path_get(target, 'a.b.c')).toBe(3);
+  });
+
+  test('should read array indexes using path_get', () => {
+    const target = { a: [{ value: 'one' }, { value: 'two' }] };
+    expect(util.path_get(target, 'a[1].value')).toBe('two');
+  });
+
+  test('should return default when missing', () => {
+    const target = { a: { b: 1 } };
+    expect(util.path_get(target, 'a.c', 'fallback')).toBe('fallback');
+  });
+
+  test('should create nested objects with path_set', () => {
+    const target = {};
+    const result = util.path_set(target, 'a.b.c', 5);
+    expect(result.updated).toBe(true);
+    expect(target.a.b.c).toBe(5);
+  });
+
+  test('should respect create false in path_set', () => {
+    const target = {};
+    const result = util.path_set(target, 'a.b.c', 5, { create: false });
+    expect(result.updated).toBe(false);
+    expect(target.a).toBeUndefined();
+  });
+});
+
+describe('Util - Dependency Graph', () => {
+  test('should track dependencies and dependents', () => {
+    const graph = util.create_dependency_graph();
+    graph.set_dependencies('field_a', ['field_b', 'field_c']);
+
+    expect(graph.get_dependencies('field_a').sort()).toEqual(['field_b', 'field_c']);
+    expect(graph.get_dependents('field_b')).toEqual(['field_a']);
+  });
+
+  test('should remove dependencies', () => {
+    const graph = util.create_dependency_graph();
+    graph.set_dependencies('field_a', ['field_b']);
+    graph.remove('field_a');
+
+    expect(graph.get_dependencies('field_a')).toEqual([]);
+    expect(graph.get_dependents('field_b')).toEqual([]);
+  });
+});
+
+describe('Util - Watch List', () => {
+  test('should call unsubscribe functions on clear', () => {
+    const watch_list = util.create_watch_list();
+    const unsubscribe = jest.fn();
+
+    watch_list.add(unsubscribe);
+    watch_list.clear();
+
+    expect(unsubscribe).toHaveBeenCalledTimes(1);
+    expect(watch_list.size()).toBe(0);
+  });
+});

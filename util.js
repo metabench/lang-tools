@@ -625,6 +625,177 @@ var true_vals = function(map) {
 	return res;
 };
 
+var normalize_path = function(path) {
+	if (Array.isArray(path)) return path.slice();
+	if (path === null || path === undefined) return [];
+	if (typeof path !== 'string') return [path];
+	var cleaned = path.replace(/\[(.+?)\]/g, '.$1');
+	return cleaned.split('.').map(part => {
+		return part.trim();
+	}).filter(part => part).map(part => {
+		var unquoted = part;
+		if ((unquoted[0] === '"' && unquoted[unquoted.length - 1] === '"') ||
+			(unquoted[0] === "'" && unquoted[unquoted.length - 1] === "'")) {
+			unquoted = unquoted.slice(1, -1);
+		}
+		if (/^-?\d+$/.test(unquoted)) {
+			return parseInt(unquoted, 10);
+		}
+		return unquoted;
+	});
+};
+
+var path_get = function(target, path, default_value) {
+	var parts = normalize_path(path);
+	var current = target;
+	for (var i = 0, l = parts.length; i < l; i++) {
+		if (current === null || current === undefined) return default_value;
+		current = current[parts[i]];
+	}
+	if (current === undefined) return default_value;
+	return current;
+};
+
+var path_set = function(target, path, value, options) {
+	options = options || {};
+	var parts = normalize_path(path);
+	if (!parts.length) {
+		return {updated: false, value: target, old_value: undefined};
+	}
+	var current = target;
+	var last_index = parts.length - 1;
+	for (var i = 0; i < last_index; i++) {
+		if (current === null || current === undefined) {
+			return {updated: false, value: target, old_value: undefined};
+		}
+		var key = parts[i];
+		if (current[key] === undefined || current[key] === null) {
+			if (options.create === false) {
+				return {updated: false, value: target, old_value: undefined};
+			}
+			var next_key = parts[i + 1];
+			current[key] = typeof next_key === 'number' ? [] : {};
+		}
+		current = current[key];
+	}
+	if (current === null || typeof current !== 'object') {
+		return {updated: false, value: target, old_value: undefined};
+	}
+	var final_key = parts[last_index];
+	var old_value = current[final_key];
+	current[final_key] = value;
+	return {updated: true, old_value: old_value, value: value, target: target};
+};
+
+var create_dependency_graph = function() {
+	var map_dependencies = new Map();
+	var map_dependents = new Map();
+
+	var normalize_deps = function(deps) {
+		if (!deps) return [];
+		if (Array.isArray(deps)) return deps;
+		return [deps];
+	};
+
+	var add_dependency = function(node, deps) {
+		var deps_arr = normalize_deps(deps);
+		var dep_set = map_dependencies.get(node);
+		if (!dep_set) {
+			dep_set = new Set();
+			map_dependencies.set(node, dep_set);
+		}
+		deps_arr.forEach(dep => {
+			if (dep === undefined || dep === null) return;
+			dep_set.add(dep);
+			var dependent_set = map_dependents.get(dep);
+			if (!dependent_set) {
+				dependent_set = new Set();
+				map_dependents.set(dep, dependent_set);
+			}
+			dependent_set.add(node);
+		});
+	};
+
+	var remove = function(node) {
+		var deps = map_dependencies.get(node);
+		if (deps) {
+			deps.forEach(dep => {
+				var dependents = map_dependents.get(dep);
+				if (dependents) {
+					dependents.delete(node);
+					if (!dependents.size) map_dependents.delete(dep);
+				}
+			});
+			map_dependencies.delete(node);
+		}
+	};
+
+	var set_dependencies = function(node, deps) {
+		remove(node);
+		add_dependency(node, deps);
+	};
+
+	var get_dependencies = function(node) {
+		var deps = map_dependencies.get(node);
+		return deps ? Array.from(deps) : [];
+	};
+
+	var get_dependents = function(node) {
+		var dependents = map_dependents.get(node);
+		return dependents ? Array.from(dependents) : [];
+	};
+
+	var clear = function() {
+		map_dependencies.clear();
+		map_dependents.clear();
+	};
+
+	return {
+		add: add_dependency,
+		remove: remove,
+		set_dependencies: set_dependencies,
+		get_dependencies: get_dependencies,
+		get_dependents: get_dependents,
+		clear: clear
+	};
+};
+
+var create_watch_list = function() {
+	var watchers = new Set();
+
+	var add = function(unsubscribe_fn) {
+		if (typeof unsubscribe_fn === 'function') {
+			watchers.add(unsubscribe_fn);
+		}
+		return unsubscribe_fn;
+	};
+
+	var remove = function(unsubscribe_fn) {
+		if (watchers.has(unsubscribe_fn)) {
+			watchers.delete(unsubscribe_fn);
+			unsubscribe_fn();
+		}
+	};
+
+	var clear = function() {
+		watchers.forEach(unsubscribe_fn => {
+			unsubscribe_fn();
+		});
+		watchers.clear();
+	};
+
+	var size = function() {
+		return watchers.size;
+	};
+
+	return {
+		add: add,
+		remove: remove,
+		clear: clear,
+		size: size
+	};
+};
+
 
 const Ui16toUi32 = (ui16) => {
     let res = new Uint32Array(ui16.length / 2);
@@ -685,6 +856,11 @@ var util = {
 	'str_arr_mapify' : str_arr_mapify,
 	'arr_ltrb' : arr_ltrb,
 	'true_vals': true_vals,
+	'normalize_path': normalize_path,
+	'path_get': path_get,
+	'path_set': path_set,
+	'create_dependency_graph': create_dependency_graph,
+	'create_watch_list': create_watch_list,
 	'validators' : validators,
 	'__data_id_method' : 'lazy',
 	'str_hex_to_int' : str_hex_to_int,

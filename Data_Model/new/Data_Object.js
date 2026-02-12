@@ -1,6 +1,6 @@
 const jsgui = require('lang-mini');
 
-const {each, tof, is_defined, get_a_sig, ll_get} = jsgui;
+const { each, tof, is_defined, get_a_sig, ll_get } = jsgui;
 
 
 const Mini_Context = require('../Mini_Context');
@@ -126,11 +126,11 @@ class Data_Object extends Data_Model {
         super(spec);
         this._ = this._ || {};
         if (spec.id) {
-			this.__id = spec.id;
-		}
-		if (spec.__id) {
-			this.__id = spec.__id;
-		}
+            this.__id = spec.id;
+        }
+        if (spec.__id) {
+            this.__id = spec.__id;
+        }
         this.__type_name = spec.__type_name || 'data_object';
 
         // And set the data_type???
@@ -164,7 +164,7 @@ class Data_Object extends Data_Model {
         //   Maybe grammer too....?
 
         this.__data_object = true;
-        
+
         // Basically never using abstract specs any longer.
         //   Could maybe be abstract or not depending on context.
 
@@ -230,7 +230,7 @@ class Data_Object extends Data_Model {
                 // Not so sure about copying the id of another object.
                 if (spec.context) this.context = spec.context;
                 // then copy the values over from spec
-                
+
                 /*.
                 //var spec_keys = spec.keys();
                 //console.log('spec_keys', spec_keys);
@@ -455,7 +455,7 @@ class Data_Object extends Data_Model {
 
 
     // 18/12/2016 Will remove constraints, then make them much more functional.
-    
+
     //  Go through the keys....
 
     'each'(callback) {
@@ -577,11 +577,11 @@ class Data_Object extends Data_Model {
     'get'() {
         var a = arguments;
         a.l = arguments.length;
-        
+
         // More specific about typed processing?
         //   The functional types may be best, and have them use mfp as well.
         //     That relies on sigs.
-        
+
 
         var sig = get_a_sig(a, 1);
 
@@ -683,6 +683,56 @@ class Data_Object extends Data_Model {
     //   Could see about further incorportating its use (in places).
 
     //'set': fp(function(a, sig) {
+
+    /**
+     * Batch multiple set() calls, deferring change events until the batch completes.
+     * Supports nesting — events flush only when the outermost batch finishes.
+     *
+     * @param {Function} fn — function containing multiple set() calls
+     * @example
+     * model.batch(() => {
+     *     model.set('sort_state', { column: 'name', direction: 'asc' });
+     *     model.set('page', 1);
+     * });
+     * // → change events fire here, after both values are set
+     */
+    'batch'(fn) {
+        this._batch_depth = (this._batch_depth || 0) + 1;
+        if (!this._batch_queue) this._batch_queue = [];
+
+        try {
+            fn();
+        } finally {
+            this._batch_depth--;
+
+            if (this._batch_depth === 0 && this._batch_queue.length > 0) {
+                // Deduplicate: keep only the last event per property name
+                const seen = new Map();
+                for (const evt of this._batch_queue) {
+                    const key = (evt && evt.name) || (Array.isArray(evt) ? evt[0] : '__unnamed');
+                    seen.set(key, evt);
+                }
+                this._batch_queue.length = 0;
+
+                for (const evt of seen.values()) {
+                    this.raise_event('change', evt);
+                }
+            }
+        }
+    }
+
+    /**
+     * Internal helper: emit a change event or queue it if inside a batch.
+     * @private
+     */
+    '_emit_change'(event_data) {
+        if (this._batch_depth > 0) {
+            this._batch_queue.push(event_data);
+        } else {
+            this.raise_event('change', event_data);
+        }
+    }
+
     'set'() {
 
         // Using ll_set or something recursive would be good.
@@ -735,6 +785,8 @@ class Data_Object extends Data_Model {
                     var data_object_next = this.get(spn_first);
                     //console.log('data_object_next', data_object_next);
                     if (data_object_next) {
+                        // Capture old value before recursive set mutates it
+                        const bubbled_old_stored = this.get(property_name);
                         res = data_object_next.set(spn_arr_next.join('.'), value);
                         if (!silent) {
                             const bubbled_stored = this.get(property_name);
@@ -745,12 +797,17 @@ class Data_Object extends Data_Model {
                                 // MVVM-friendly additions:
                                 'data_value': (bubbled_stored && bubbled_stored.__data_value) ? bubbled_stored : undefined,
                                 'raw_value': (bubbled_stored && bubbled_stored.__data_value) ? bubbled_stored.value : ((bubbled_stored && typeof bubbled_stored.value === 'function') ? bubbled_stored.value() : value),
-                                'bubbled': true
+                                'bubbled': true,
+                                'old': bubbled_old_stored
+                                    ? (bubbled_old_stored.__data_value
+                                        ? bubbled_old_stored.value
+                                        : bubbled_old_stored)
+                                    : undefined
                             };
                             if (source) {
                                 e_change.source = source;
                             }
-                            this.raise_event('change', e_change);
+                            this._emit_change(e_change);
                         }
                     } else {
                         throw ('No data object at this level.');
@@ -759,6 +816,12 @@ class Data_Object extends Data_Model {
                     var data_object_next = this.get(property_name);
                     //console.log('data_object_next', data_object_next);
                     const had_existing = is_defined(data_object_next) && data_object_next !== null;
+                    // Capture old unwrapped value BEFORE any mutation
+                    const old_value = had_existing
+                        ? (data_object_next && data_object_next.__data_value
+                            ? data_object_next.value
+                            : data_object_next)
+                        : undefined;
                     const incoming_is_node = value && (value.__data_object || value.__data_value || value.__data_grid);
                     const existing_is_data_value = data_object_next && data_object_next.__data_value;
                     const existing_is_data_object = data_object_next && data_object_next.__data_object;
@@ -799,12 +862,33 @@ class Data_Object extends Data_Model {
                             'value': (!had_existing) ? stored : ((stored && stored.__data_value) ? stored.value : ((stored && typeof stored.value === 'function') ? stored.value() : stored)),
                             // MVVM-friendly additions:
                             'data_value': (stored && stored.__data_value) ? stored : undefined,
-                            'raw_value': (stored && stored.__data_value) ? stored.value : ((stored && typeof stored.value === 'function') ? stored.value() : stored)
+                            'raw_value': (stored && stored.__data_value) ? stored.value : ((stored && typeof stored.value === 'function') ? stored.value() : stored),
+                            'old': old_value
                         };
                         if (source) {
                             e_change.source = source;
                         }
-                        this.raise_event('change', e_change);
+                        this._emit_change(e_change);
+                    }
+
+                    // Create getter/setter property accessor on the instance
+                    if (typeof property_name === 'string' && !property_name.startsWith('_') && property_name.indexOf('.') === -1) {
+                        const existing_desc = Object.getOwnPropertyDescriptor(this, property_name);
+                        if (!existing_desc || (typeof existing_desc.get !== 'function' && typeof existing_desc.value !== 'function')) {
+                            if (!(property_name in this) || !existing_desc) {
+                                Object.defineProperty(this, property_name, {
+                                    enumerable: true,
+                                    configurable: true,
+                                    get() {
+                                        const raw = this.get(property_name);
+                                        return (raw && raw.__data_value) ? raw.value : raw;
+                                    },
+                                    set(v) {
+                                        this.set(property_name, v);
+                                    }
+                                });
+                            }
+                        }
                     }
 
                     // Back-compat return values:
@@ -829,7 +913,7 @@ class Data_Object extends Data_Model {
                 value = processed_input;
                 this._[property_name] = value;
 
-                this.raise_event('change', {
+                this._emit_change({
                     'value': value
                 });
                 return value;
@@ -846,7 +930,7 @@ class Data_Object extends Data_Model {
                     //console.log('property_name ' + property_name);
                     this._[property_name] = value;
                     // Or just have 3 parameters?
-                    this.raise_event('change', [property_name, value]);
+                    this._emit_change([property_name, value]);
 
                     // Raise a change event?
                     //  Or is set event OK?
@@ -869,7 +953,7 @@ class Data_Object extends Data_Model {
                 } else if (sig === '[c]') {
                     //this._[]
                     this._[property_name] = value;
-                    this.raise_event('change', [property_name, value]);
+                    this._emit_change([property_name, value]);
                     //throw 'unsupported';
                     return value;
                 }
